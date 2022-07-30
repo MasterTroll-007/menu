@@ -1,5 +1,6 @@
 package cz.menu.control;
 
+import cz.menu.dto.MenuDto;
 import cz.menu.entity.Menu;
 import cz.menu.service.IMenusService;
 import lombok.AllArgsConstructor;
@@ -18,15 +19,14 @@ public class MenuController {
     private static final String MENU_FORM = "menu/form";
 
     @GetMapping(value = "/menu")
-    public String newMenuForm(Model model, @ModelAttribute Menu menu) {
-        model.addAttribute("menus", menu);
+    public String newMenuForm(Model model, @ModelAttribute MenuDto menuDto) {
         model.addAttribute("model", model);
         return MENU_FORM;
     }
 
     @PostMapping(value = "/menu")
-    public String saveMenuForm(@ModelAttribute Menu menu) {
-        menusService.saveMenuForm(menu);
+    public String saveMenuForm(@ModelAttribute MenuDto menuDto) {
+        menusService.saveMenuForm(menuDto);
         return MENU_FORM;
     }
 

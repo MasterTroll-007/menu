@@ -1,8 +1,8 @@
 package cz.menu.service;
 
-import cz.menu.entity.Menu;
+import cz.menu.dto.MenuDto;
 
 public interface IMenusService {
 
-    void saveMenuForm(Menu menus);
+    void saveMenuForm(MenuDto menuDto);
 }

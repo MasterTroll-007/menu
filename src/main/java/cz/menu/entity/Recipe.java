@@ -16,7 +16,6 @@ public class Recipe extends AbstractPersistable implements Serializable {
     private String name;
 
     private String description;
-
     @ManyToMany
     private List<Ingredient> ingredients;
 }

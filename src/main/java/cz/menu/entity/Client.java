@@ -3,31 +3,24 @@ package cz.menu.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import java.io.Serializable;
+import javax.persistence.Entity;import java.io.Serializable;
 
 @Getter
 @Setter
 @Entity
 public class Client extends AbstractPersistable implements Serializable {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String clientFirstName;
+    private String firstName;
 
-    private String clientSecondName;
+    private String secondName;
 
-    private int clientAge;
+    private int age;
 
-    private int clientWeight;
+    private int weight;
 
-    private int clientHeight;
+    private int height;
 
     private float bmrCoef;
 }

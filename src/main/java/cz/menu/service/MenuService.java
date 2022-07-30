@@ -1,10 +1,12 @@
 package cz.menu.service;
 
+import cz.menu.dto.MenuDto;
 import cz.menu.entity.Menu;
 import cz.menu.repository.MenusRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,10 +16,16 @@ public class MenuService implements IMenusService {
 
     private final MenusRepository menusRepository;
 
-    public void saveMenuForm(Menu menus) {
-        log.info("Ulozene data: {}", menus.toString());
-        Menu savedEntity = menusRepository.save(menus);
+    public void saveMenuForm(MenuDto menuDto) {
+        log.info("Ulozene data: {}", menuDto.toString());
+        Menu menuEntity = menuMapper(menuDto);
+        Menu savedEntity = menusRepository.save(menuEntity);
         log.info(savedEntity.toString());
+    }
+
+    private Menu menuMapper (MenuDto dto) {
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(dto, Menu.class);
     }
 
 }

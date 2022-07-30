@@ -9,12 +9,12 @@
 <body>
 
 <form th:action="@{/logout}" method="get">
-    <input type="submit" value="Logout"
+    <input class="ms-2 mt-2" type="submit" value="Logout"
            name="logout" id="logout"/>
 </form>
 
-<form method="post" th:object="${menus}">
-    <div class="container-xl">
+<form method="post" th:object="${menu}">
+    <div class="ms-5">
 
 <!--        <div class="col-3 mt-5">
             <div class="input-group">
@@ -29,7 +29,7 @@
         <div class="col-3 mt-3">
             <div class="input-group">
                 <label class="col-6 input-group-text" for="bmrCoef">Koeficient pohybu</label>
-                <input th:field="${menu.bmrCoef}" id="bmrCoef" type="text" class="form-control"
+                <input th:field="${menu.client.bmrCoef}" id="bmrCoef" type="text" class="form-control"
                        placeholder="Rozmezí 1.0 - 1.3">
             </div>
         </div>
@@ -37,7 +37,7 @@
         <div class="col-3 mt-3">
             <div class="input-group">
                 <label class="col-6 input-group-text" for="clientHeight">Výška</label>
-                <input th:field="${menus.clientHeight}" id="clientHeight" type="text" class="form-control"
+                <input th:field="${menu.client.height}" id="clientHeight" type="text" class="form-control"
                        placeholder="Výška v cm">
             </div>
         </div>
@@ -45,7 +45,7 @@
         <div class="col-3 mt-3">
             <div class="input-group">
                 <label class="col-6 input-group-text" for="clientWeight">Váha</label>
-                <input th:field="${menus.clientWeight}" id="clientWeight" type="text" class="form-control"
+                <input th:field="${menu.client.weight}" id="clientWeight" type="text" class="form-control"
                        placeholder="Váha v kg">
             </div>
         </div>
@@ -54,7 +54,7 @@
         <div class="col-3 mt-3">
             <div class="input-group">
                 <label class="col-6 input-group-text" for="clientAge">Věk</label>
-                <input th:field="${menus.clientAge}" id="clientAge" type="text" class="form-control">
+                <input th:field="${menu.client.age}" id="clientAge" type="text" class="form-control">
             </div>
         </div>
 

@@ -16,9 +16,6 @@ import java.io.Serializable;
 @Entity
 public class Menu extends AbstractPersistable implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     @OneToOne
     private Client client;
     @OneToOne
