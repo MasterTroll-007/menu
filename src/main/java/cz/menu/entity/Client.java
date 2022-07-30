@@ -8,17 +8,20 @@ import org.springframework.data.annotation.Id;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.OneToOne;
 import java.io.Serializable;
 
 @Getter
 @Setter
 @Entity
-public class Menus extends AbstractPersistable implements Serializable {
+public class Client extends AbstractPersistable implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String clientFirstName;
+
+    private String clientSecondName;
 
     private int clientAge;
 
@@ -27,6 +30,4 @@ public class Menus extends AbstractPersistable implements Serializable {
     private int clientHeight;
 
     private float bmrCoef;
-    @OneToOne
-    private MenuType menuType;
 }
