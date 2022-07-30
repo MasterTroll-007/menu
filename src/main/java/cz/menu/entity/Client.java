@@ -5,7 +5,9 @@ import cz.menu.model.Sex;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 import java.io.Serializable;
 
 @Getter
@@ -27,4 +29,7 @@ public class Client extends AbstractPersistable implements Serializable {
     private int height;
 
     private float bmrCoef;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private BMR bmr;
 }

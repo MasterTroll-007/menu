@@ -1,6 +1,8 @@
 package cz.menu.control;
 
+import cz.menu.dto.BMRDto;
 import cz.menu.dto.MenuDto;
+import cz.menu.entity.BMR;
 import cz.menu.entity.Menu;
 import cz.menu.service.IMenuService;
 import lombok.AllArgsConstructor;
@@ -18,6 +20,7 @@ public class MenuController {
     private static final String MENU_FORM = "menu/form";
     private static final String BMR_FORM = "menu/bmrForm";
     private static final String REDIRECT_BMR_FORM = "redirect:/menu/";
+    private static final String REDIRECT_MEAL_PLAN = "redirect:/menu/mealPlan/";
 
     @GetMapping
     public String newMenuForm(Model model, @ModelAttribute MenuDto menuDto) {
@@ -32,10 +35,16 @@ public class MenuController {
         return REDIRECT_BMR_FORM + menu.getId();
     }
 
-    @GetMapping(value = "/{id}")
-    public String bmrForm(@PathVariable("id") Long id, Model model, @ModelAttribute MenuDto menuDto) throws Exception {
-        menuService.calculateBMR(model, id);
+    @GetMapping(value = "/{menuId}")
+    public String bmrForm(@PathVariable("menuId") Long menuId, Model model, @ModelAttribute MenuDto menuDto) throws Exception {
+        menuService.calculateBMR(model, menuId);
         return BMR_FORM;
+    }
+
+    @PostMapping(value = "/{menuId}")
+    public String saveBmrForm(@PathVariable("menuId") Long menuId, Model model, @ModelAttribute BMRDto bmrDto) {
+        menuService.saveBmr(model, bmrDto, menuId);
+        return REDIRECT_MEAL_PLAN  + menuId;
     }
 
 

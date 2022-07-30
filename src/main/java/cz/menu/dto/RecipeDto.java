@@ -5,16 +5,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BMRDto implements Serializable {
-
+public class RecipeDto implements Serializable {
     private Long id;
-    private double kJ;
-    private double proteins;
-    private double carbohydrates;
-    private double fats;
-    private double fibres;
+    private String name;
+    private String description;
+    private List<IngredientDto> ingredients;
 }

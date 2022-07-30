@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -12,4 +13,6 @@ import java.io.Serializable;
 public class MenuDto implements Serializable {
     private Long id;
     private ClientDto client;
+    private List<RecipeDto> recipes;
+
 }

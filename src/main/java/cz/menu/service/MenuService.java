@@ -1,10 +1,12 @@
 package cz.menu.service;
 
+import cz.menu.dto.BMRDto;
 import cz.menu.dto.MenuDto;
 import cz.menu.entity.BMR;
 import cz.menu.entity.Client;
 import cz.menu.entity.Menu;
 import cz.menu.model.Sex;
+import cz.menu.repository.BmrRepository;
 import cz.menu.repository.ClientRepository;
 import cz.menu.repository.MenuRepository;
 
@@ -23,7 +25,9 @@ public class MenuService implements IMenuService {
 
     private final MenuRepository menuRepository;
     private final ClientRepository clientRepository;
+    private final BmrRepository bmrRepository;
 
+    @Override
     public Menu saveMenuForm(Model model, MenuDto menuDto) {
         Menu menuEntity = menuEntityMapper(menuDto);
         Menu savedEntity = menuRepository.save(menuEntity);
@@ -35,19 +39,27 @@ public class MenuService implements IMenuService {
         return savedEntity;
     }
 
+    @Override
+    public void saveBmr(Model model, BMRDto bmrDto, Long menuId) {
+        Menu menuEntity = menuRepository.getReferenceById(menuId);
+        Client clientEntity = clientRepository.getReferenceById(menuEntity.getClient().getId());
+
+        BMR bmrEntity = bmrEntityMapper(bmrDto);
+        BMR savedBmr = bmrRepository.save(bmrEntity);
+        clientEntity.setBmr(savedBmr);
+
+        clientRepository.save(clientEntity);
+    }
+
+    @Override
     public void calculateBMR(Model model, Long menuId) throws Exception {
-        Optional<Menu> menu = menuRepository.findById(menuId);
-        Optional<Client> client = clientRepository.findById(menu.get().getClient().getId());
-        if (client.isEmpty()) {
+        Menu menu = menuRepository.getReferenceById(menuId);
+        Optional<Client> client = clientRepository.findById(menu.getClient().getId());
+        if (client.isEmpty())
             throw new Exception();
-        }
 
-        BMR bmr = getBmr(menu.get(), client.get());
-        MenuDto menuDto = menuDtoMapper(menu.get());
-
-
+        BMR bmr = getBmr(menu, client.get());
         model.addAttribute("model", model);
-        model.addAttribute("menu", menuDto);
         model.addAttribute("bmr", bmr);
     }
 
@@ -78,6 +90,12 @@ public class MenuService implements IMenuService {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(dto, Menu.class);
     }
+
+    private BMR bmrEntityMapper(BMRDto dto) {
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(dto, BMR.class);
+    }
+
     private MenuDto menuDtoMapper(Menu entity) {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(entity, MenuDto.class);
