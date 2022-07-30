@@ -1,5 +1,6 @@
 package cz.menu.dto;
 
+import cz.menu.model.Sex;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class ClientDto implements Serializable {
     private Long id;
+    private Sex sex;
     private String firstName;
     private String secondName;
     private int age;

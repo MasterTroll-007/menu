@@ -13,13 +13,48 @@
          name="logout" id="logout"/>
 </form>
 
-<form method="post" th:object="${menu}">
+<form method="post" th:object="${bmr}">
   <div class="ms-5">
 
-    test
+    <div class="col-3 mt-3">
+      <div class="input-group">
+        <label class="col-6 input-group-text" for="firstName">Sacharidy</label>
+        <input th:field="${bmr.carbohydrates}" id="firstName" type="text" class="form-control">
+      </div>
+    </div>
+
+    <div class="col-3 mt-3">
+      <div class="input-group">
+        <label class="col-6 input-group-text" for="secondName">Proteiny</label>
+        <input th:field="${bmr.proteins}" id="secondName" type="text" class="form-control">
+      </div>
+    </div>
+
+    <div class="col-3 mt-3">
+      <div class="input-group">
+        <label class="col-6 input-group-text" for="bmrCoef">Tuky</label>
+        <input th:field="${bmr.fats}" id="bmrCoef" type="text" class="form-control">
+      </div>
+    </div>
+
+    <div class="col-3 mt-3">
+      <div class="input-group">
+        <label class="col-6 input-group-text" for="clientHeight">Vláknina</label>
+        <input th:field="${bmr.fibres}" id="clientHeight" type="text" class="form-control">
+      </div>
+    </div>
+
+    <div class="col-3 mt-3">
+      <div class="input-group">
+        <label class="col-6 input-group-text" for="clientWeight">Celkem kJ</label>
+        <input th:field="${bmr.kJ}" id="clientWeight" type="text" class="form-control">
+      </div>
+    </div>
+
     <button type="submit" class="mt-3 btn btn-primary">Další</button>
 
   </div>
 </form>
+
 </body>
 </html>
