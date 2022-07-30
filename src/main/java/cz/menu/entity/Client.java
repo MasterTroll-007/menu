@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import java.io.Serializable;
 
@@ -31,5 +32,6 @@ public class Client extends AbstractPersistable implements Serializable {
     private float bmrCoef;
 
     @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "bmr_id", referencedColumnName = "id")
     private BMR bmr;
 }

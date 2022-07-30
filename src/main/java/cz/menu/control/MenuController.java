@@ -2,8 +2,6 @@ package cz.menu.control;
 
 import cz.menu.dto.BMRDto;
 import cz.menu.dto.MenuDto;
-import cz.menu.entity.BMR;
-import cz.menu.entity.Menu;
 import cz.menu.service.IMenuService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -19,6 +17,7 @@ public class MenuController {
 
     private static final String MENU_FORM = "menu/form";
     private static final String BMR_FORM = "menu/bmrForm";
+    private static final String MEAL_PLAN = "menu/mealPlan";
     private static final String REDIRECT_BMR_FORM = "redirect:/menu/";
     private static final String REDIRECT_MEAL_PLAN = "redirect:/menu/mealPlan/";
 
@@ -31,8 +30,8 @@ public class MenuController {
 
     @PostMapping
     public String saveMenuForm(Model model, @ModelAttribute MenuDto menuDto) {
-        Menu menu = menuService.saveMenuForm(model, menuDto);
-        return REDIRECT_BMR_FORM + menu.getId();
+        Long menuId = menuService.saveMenuForm(model, menuDto).getId();
+        return REDIRECT_BMR_FORM + menuId;
     }
 
     @GetMapping(value = "/{menuId}")
@@ -44,8 +43,17 @@ public class MenuController {
     @PostMapping(value = "/{menuId}")
     public String saveBmrForm(@PathVariable("menuId") Long menuId, Model model, @ModelAttribute BMRDto bmrDto) {
         menuService.saveBmr(model, bmrDto, menuId);
-        return REDIRECT_MEAL_PLAN  + menuId;
+        return REDIRECT_MEAL_PLAN + menuId;
     }
 
+    @GetMapping(value = "/mealPlan/{menuId}")
+    public String mealPlanForm(@PathVariable("menuId") Long menuId, Model model, @ModelAttribute MenuDto menuDto) {
+        return MEAL_PLAN;
+    }
+
+    @PostMapping(value = "/mealPlan/{menuId}")
+    public String saveMealPlan(@PathVariable("menuId") Long menuId, Model model, @ModelAttribute MenuDto menuDto) {
+        return MEAL_PLAN;
+    }
 
 }

@@ -12,8 +12,10 @@ import cz.menu.repository.MenuRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.math3.util.Precision;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 
 import java.util.Optional;
@@ -28,6 +30,7 @@ public class MenuService implements IMenuService {
     private final BmrRepository bmrRepository;
 
     @Override
+    @Transactional
     public Menu saveMenuForm(Model model, MenuDto menuDto) {
         Menu menuEntity = menuEntityMapper(menuDto);
         Menu savedEntity = menuRepository.save(menuEntity);
@@ -40,15 +43,25 @@ public class MenuService implements IMenuService {
     }
 
     @Override
+    @Transactional
     public void saveBmr(Model model, BMRDto bmrDto, Long menuId) {
-        Menu menuEntity = menuRepository.getReferenceById(menuId);
-        Client clientEntity = clientRepository.getReferenceById(menuEntity.getClient().getId());
-
+        Menu menuEntity = menuRepository.findById(menuId).get();
         BMR bmrEntity = bmrEntityMapper(bmrDto);
-        BMR savedBmr = bmrRepository.save(bmrEntity);
-        clientEntity.setBmr(savedBmr);
 
-        clientRepository.save(clientEntity);
+        if (menuEntity.getClient().getBmr() == null) {
+            menuEntity.getClient().setBmr(new BMR());
+        } else {
+            bmrEntity.setId(menuEntity.getClient().getBmr().getId());
+        }
+
+        menuEntity.getClient().getBmr().setProteins(bmrEntity.getProteins());
+        menuEntity.getClient().getBmr().setCarbohydrates(bmrEntity.getCarbohydrates());
+        menuEntity.getClient().getBmr().setFats(bmrEntity.getFats());
+        menuEntity.getClient().getBmr().setFibres(bmrEntity.getFibres());
+        menuEntity.getClient().getBmr().setKJ(bmrEntity.getKJ());
+
+        Menu save = menuRepository.save(menuEntity);
+        log.info(save.getClient().getBmr().toString());
     }
 
     @Override
@@ -63,6 +76,12 @@ public class MenuService implements IMenuService {
         model.addAttribute("bmr", bmr);
     }
 
+    @Override
+    public void mealPlan(Model model, Long menuId) {
+        Menu menuEntity = menuRepository.getReferenceById(menuId);
+
+    }
+
     private BMR getBmr(Menu menu, Client client) {
         BMR bmr = new BMR();
         final int age = client.getAge();
@@ -75,10 +94,10 @@ public class MenuService implements IMenuService {
         } else {
             kj = ((10 * weight) + (6.25 * height) - (5 * age) + 5) * 4.184;
         }
-        bmr.setKJ(kj);
-        double proteins = bmr.getKJ() / 17 * 0.25;
-        double carbs = bmr.getKJ() / 17 * 0.45;
-        double fats = bmr.getKJ() / 38 * 0.30;
+        bmr.setKJ(Precision.round(kj,1));
+        double proteins = Precision.round(bmr.getKJ() / 17 * 0.25, 1);
+        double carbs = Precision.round(bmr.getKJ() / 17 * 0.45, 1);
+        double fats = Precision.round(bmr.getKJ() / 38 * 0.30, 1);
         // P/C/F = 25/45/30
         bmr.setFats(fats);
         bmr.setCarbohydrates(carbs);

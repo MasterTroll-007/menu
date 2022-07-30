@@ -16,6 +16,15 @@
 <form method="post" th:object="${menu}">
     <div class="ms-5">
 
+        <div class="col-3 ms-5 mt-3">
+            <div class="input-group">
+                <select name="gender" th:field="*{client.sex}">
+                    <option th:each="sex : ${T(cz.menu.model.Sex).values()}"
+                            th:value="${sex}" th:text="${sex.gender}"></option>
+                </select>
+            </div>
+        </div>
+
         <div class="col-3 mt-3">
             <div class="input-group">
                 <label class="col-6 input-group-text" for="firstName">Křestní jméno</label>
