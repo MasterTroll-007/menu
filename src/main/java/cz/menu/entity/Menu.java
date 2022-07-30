@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Getter
@@ -16,8 +13,6 @@ import java.io.Serializable;
 @Entity
 public class Menu extends AbstractPersistable implements Serializable {
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Client client;
-    @OneToOne
-    private MenuType menuType;
 }

@@ -17,10 +17,9 @@ public class MenuService implements IMenusService {
     private final MenusRepository menusRepository;
 
     public void saveMenuForm(MenuDto menuDto) {
-        log.info("Ulozene data: {}", menuDto.toString());
         Menu menuEntity = menuMapper(menuDto);
         Menu savedEntity = menusRepository.save(menuEntity);
-        log.info(savedEntity.toString());
+        log.info("Ulozene data: {}", savedEntity);
     }
 
     private Menu menuMapper (MenuDto dto) {

@@ -16,15 +16,21 @@
 <form method="post" th:object="${menu}">
     <div class="ms-5">
 
-<!--        <div class="col-3 mt-5">
+        <div class="col-3 mt-3">
             <div class="input-group">
-                <label class="col-6 input-group-text" for="menuType">Jídelníček</label>
-                <select th:field="${menus.menuType}" class="form-select" id="menuType">
-                    <option th:each="menu : ${T(cz.menu.entity.MenuType).values()}" th:text="${menu.type}"
-                            th:value="${menu}"></option>
-                </select>
+                <label class="col-6 input-group-text" for="firstName">Křestní jméno</label>
+                <input th:field="${menu.client.firstName}" id="firstName" type="text" class="form-control"
+                       placeholder="Jan">
             </div>
-        </div>-->
+        </div>
+
+        <div class="col-3 mt-3">
+            <div class="input-group">
+                <label class="col-6 input-group-text" for="secondName">Příjmení</label>
+                <input th:field="${menu.client.secondName}" id="secondName" type="text" class="form-control"
+                       placeholder="Novák">
+            </div>
+        </div>
 
         <div class="col-3 mt-3">
             <div class="input-group">

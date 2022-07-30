@@ -12,5 +12,4 @@ import java.io.Serializable;
 public class MenuDto implements Serializable {
     private Long id;
     private ClientDto client;
-    private MenuTypeDto menuType;
 }
