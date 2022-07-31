@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Entity;
@@ -19,16 +20,12 @@ import java.util.Objects;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Ingredient extends AbstractPersistable implements Serializable {
 
-    @JsonView(DataTablesOutput.View.class)
     private String name;
-    @JsonView(DataTablesOutput.View.class)
     private int proteins;
-    @JsonView(DataTablesOutput.View.class)
     private int carbohydrates;
-    @JsonView(DataTablesOutput.View.class)
     private int fats;
-    @JsonView(DataTablesOutput.View.class)
     private int fibre;
+    private int kJ = 0;
 
     @Override
     public boolean equals(Object o) {
@@ -40,11 +37,12 @@ public class Ingredient extends AbstractPersistable implements Serializable {
                 Objects.equals(proteins, ingredient.proteins) &&
                 Objects.equals(carbohydrates, ingredient.carbohydrates) &&
                 Objects.equals(fats, ingredient.fats) &&
-                Objects.equals(fibre, ingredient.fibre);
+                Objects.equals(fibre, ingredient.fibre) &&
+                Objects.equals(kJ, ingredient.kJ);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), name, proteins, carbohydrates, fats, fibre);
+        return Objects.hash(super.hashCode(), name, proteins, carbohydrates, fats, fibre, kJ);
     }
 }

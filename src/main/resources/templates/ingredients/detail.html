@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Detail ingredience</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+
+</head>
+<body>
+<div th:insert="navbar :: navbar">  </div>
+
+<form method="post" th:object="${ingredient}">
+    <div class="ms-5 container-md">
+
+        <div class="col-3 mt-3 menu-form">
+            <div class="input-group">
+                <label class="col-6 input-group-text" for="name">Název</label>
+                <input disabled th:value="${ingredient.name}" id="name" type="text" class="form-control">
+            </div>
+        </div>
+
+        <div class="col-3 mt-3 menu-form">
+            <div class="input-group">
+                <label class="col-6 input-group-text" for="carbohydrates">Sacharidy</label>
+                <input disabled th:field="${ingredient.carbohydrates}" id="carbohydrates" type="text" class="form-control kJcalculation">
+            </div>
+        </div>
+
+        <div class="col-3 mt-3 menu-form">
+            <div class="input-group">
+                <label class="col-6 input-group-text" for="proteins">Proteiny</label>
+                <input th:field="${ingredient.proteins}" id="proteins" type="text" class="form-control kJcalculation">
+            </div>
+        </div>
+
+        <div class="col-3 mt-3 menu-form">
+            <div class="input-group">
+                <label class="col-6 input-group-text" for="fats">Tuky</label>
+                <input th:field="${ingredient.fats}" id="fats" type="text" class="form-control kJcalculation">
+            </div>
+        </div>
+
+        <div class="col-3 mt-3 menu-form">
+            <div class="input-group">
+                <label class="col-6 input-group-text" for="fibres">Vláknina</label>
+                <input th:field="${ingredient.fibre}" id="fibres" type="text" class="form-control">
+            </div>
+        </div>
+
+        <div class="col-3 mt-3 menu-form">
+            <div class="input-group">
+                <label class="col-6 input-group-text" for="overallKj">Hodnota kJ na 100g</label>
+                <input th:field="${ingredient.kJ}" id="overallKj" type="text" class="form-control">
+            </div>
+        </div>
+
+        <button type="submit" class="mt-3 btn btn-primary">Další</button>
+
+    </div>
+</form>
+
+<script>
+    $(document).ready(function () {
+        $(".kJcalculation").(function () {
+            var carbs = $('#carbohydrates').val();
+            var proteins = $('#proteins').val();
+            var fats = $('#fats').val();
+            $('#overallKj').val(addCommas(Math.round((carbs * 17 + proteins * 17) + (fats * 38))));
+        });
+
+    });
+
+    function addCommas(nStr)
+    {
+        nStr += '';
+        x = nStr.split('.');
+        x1 = x[0];
+        x2 = x.length > 1 ? '.' + x[1] : '';
+        var rgx = /(\d+)(\d{3})/;
+        while (rgx.test(x1)) {
+            x1 = x1.replace(rgx, '$1' + '.' + '$2');
+        }
+        return x1 + x2;
+    }
+</script>
+
+</body>
+</html>

@@ -7,7 +7,16 @@ import cz.repository.IngredientRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -23,12 +32,10 @@ public class IngredientService implements IIngredientService {
     }
 
     @Override
-    public Ingredient updateIngredient(IngredientDto dto) throws IngredientException {
-        Ingredient entity = ingredientRepository.findById(dto.getId())
+    public IngredientDto updateIngredientForm(Model model, Long ingredientId) throws IngredientException {
+        Ingredient entity = ingredientRepository.findById(ingredientId)
                 .orElseThrow(() -> new IngredientException("Nenalezeny žádné ingredience"));
-        mapIngredientEntity(dto, entity);
-
-        return ingredientRepository.save(entity);
+        return new IngredientDto(entity);
     }
 
     @Override
@@ -36,12 +43,26 @@ public class IngredientService implements IIngredientService {
         ingredientRepository.deleteById(ingredientId);
     }
 
-    private void mapIngredientEntity(IngredientDto dto, Ingredient entity) {
-        entity.setCarbohydrates(dto.getCarbohydrates());
-        entity.setFats(dto.getFats());
-        entity.setProteins(dto.getProteins());
-        entity.setFibre(dto.getFibre());
-        entity.setName(dto.getName());
+    @Override
+    public Page<IngredientDto> findPaginated(Pageable pageable) {
+        int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int startItem = currentPage * pageSize;
+        List<Ingredient> ingredients = ingredientRepository.findAll();
+        List<IngredientDto> ingredientsDto = new ArrayList<>();
+        ingredients.forEach(ingredient ->
+            ingredientsDto.add(new IngredientDto(ingredient)));
+
+        List<IngredientDto> list;
+
+        if (ingredientsDto.size() < startItem) {
+            list = Collections.emptyList();
+        } else {
+            int toIndex = Math.min(startItem + pageSize, ingredientsDto.size());
+            list = ingredientsDto.subList(startItem, toIndex);
+        }
+
+        return new PageImpl<>(list, PageRequest.of(currentPage, pageSize), ingredients.size());
     }
 
     private Ingredient ingredientEntityMapper(IngredientDto dto) {

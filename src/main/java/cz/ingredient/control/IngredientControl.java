@@ -1,6 +1,5 @@
 package cz.ingredient.control;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import cz.ingredient.dto.IngredientDto;
 import cz.ingredient.entity.Ingredient;
 import cz.ingredient.exception.IngredientException;
@@ -8,14 +7,17 @@ import cz.ingredient.service.IIngredientService;
 import cz.repository.IngredientRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
-import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Controller
@@ -23,20 +25,45 @@ import javax.validation.Valid;
 @RequestMapping("/ingredients")
 public class IngredientControl {
 
+    private static final String INGREDIENT_DETAIL = "ingredients/detail";
+    private static final String INGREDIENT_LIST = "ingredients/list";
+
     private final IIngredientService ingredientService;
-    private final IngredientRepository ingredientRepository;
 
     @GetMapping
     public String getFarmersPage() {
-        return "ingredients/list";
+        return INGREDIENT_LIST;
     }
 
-    @ResponseBody
-    @JsonView(DataTablesOutput.View.class)
-    @GetMapping("/api/v1")
-    public DataTablesOutput<IngredientDto> getIngredients( DataTablesInput input) {
-        input.addOrder("name", true);
-        return ingredientRepository.findAll(input, IngredientDto::new);
+    @GetMapping("/{id}/edit")
+    public String updateIngredientForm(Model model, @PathVariable Long id) throws IngredientException {
+        IngredientDto ingredientDto = ingredientService.updateIngredientForm(model, id);
+        model.addAttribute("ingredient", ingredientDto);
+        model.addAttribute("model", model);
+
+        return INGREDIENT_DETAIL;
+    }
+
+    @GetMapping
+    public String getList(Model model, @RequestParam("page") Optional<Integer> page,
+                          @RequestParam("size") Optional<Integer> size) {
+        int currentPage = page.orElse(1);
+        int pageSize = size.orElse(5);
+
+        Page<IngredientDto> bookPage = ingredientService.findPaginated(PageRequest.of(currentPage - 1, pageSize));
+
+        model.addAttribute("ingredientPage", bookPage);
+
+        int totalPages = bookPage.getTotalPages();
+        if (totalPages > 0) {
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .toList();
+            model.addAttribute("pageNumbers", pageNumbers);
+        }
+
+        return INGREDIENT_LIST;
+
     }
 
     @PostMapping
@@ -46,11 +73,11 @@ public class IngredientControl {
         return new IngredientDto(updatedEntity);
     }
 
-    @PostMapping("/api/v1/{id}/edit")
+/*    @PostMapping("/{id}/edit")
     public IngredientDto updateIngredient(@RequestAttribute IngredientDto ingredientDto) throws IngredientException {
         Ingredient updatedEntity = ingredientService.updateIngredient(ingredientDto);
         return new IngredientDto(updatedEntity);
-    }
+    }*/
 
     @PostMapping("/api/v1/{id}/remove")
     @ResponseBody
