@@ -7,7 +7,6 @@ import cz.ingredient.exception.IngredientException;
 import cz.ingredient.service.IIngredientService;
 import cz.repository.IngredientRepository;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
@@ -47,18 +46,16 @@ public class IngredientControl {
         return new IngredientDto(updatedEntity);
     }
 
-    @GetMapping("/api/v1/{id}/edit")
-    public IngredientDto updateIngredient(@RequestAttribute IngredientDto ingredientDto)
-            throws IngredientException {
+    @PostMapping("/api/v1/{id}/edit")
+    public IngredientDto updateIngredient(@RequestAttribute IngredientDto ingredientDto) throws IngredientException {
         Ingredient updatedEntity = ingredientService.updateIngredient(ingredientDto);
         return new IngredientDto(updatedEntity);
     }
 
     @PostMapping("/api/v1/{id}/remove")
     @ResponseBody
-    public IngredientDto removeIngredient(@PathVariable Long id) {
-        Ingredient updatedEntity = ingredientService.removeIngredient(id);
-        return new IngredientDto(updatedEntity);
+    public void removeIngredient(@PathVariable Long id) {
+        ingredientService.removeIngredient(id);
     }
 
     @ExceptionHandler(Exception.class)

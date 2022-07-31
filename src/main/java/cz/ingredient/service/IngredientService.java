@@ -32,8 +32,8 @@ public class IngredientService implements IIngredientService {
     }
 
     @Override
-    public Ingredient removeIngredient(Long ingredientId) {
-        return null;
+    public void removeIngredient(Long ingredientId) {
+        ingredientRepository.deleteById(ingredientId);
     }
 
     private void mapIngredientEntity(IngredientDto dto, Ingredient entity) {

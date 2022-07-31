@@ -11,5 +11,5 @@ public interface IIngredientService {
 
     Ingredient updateIngredient(IngredientDto ingredientDto) throws IngredientException;
 
-    Ingredient removeIngredient(Long ingredientId);
+    void removeIngredient(Long ingredientId);
 }
