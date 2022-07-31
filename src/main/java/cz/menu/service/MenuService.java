@@ -73,6 +73,8 @@ public class MenuService implements IMenuService {
 
         BMR bmr = getBmr(menu, client.get());
         model.addAttribute("model", model);
+        model.addAttribute("sex", client.get().getSex());
+        model.addAttribute("fullname", client.get().getFullName());
         model.addAttribute("bmr", bmr);
     }
 
@@ -95,10 +97,10 @@ public class MenuService implements IMenuService {
             kj = ((10 * weight) + (6.25 * height) - (5 * age) + 5) * 4.184;
         }
         bmr.setKJ(Precision.round(kj,1));
+        // P/C/F = 25%/45%/30%
         double proteins = Precision.round(bmr.getKJ() / 17 * 0.25, 1);
         double carbs = Precision.round(bmr.getKJ() / 17 * 0.45, 1);
         double fats = Precision.round(bmr.getKJ() / 38 * 0.30, 1);
-        // P/C/F = 25/45/30
         bmr.setFats(fats);
         bmr.setCarbohydrates(carbs);
         bmr.setProteins(proteins);
