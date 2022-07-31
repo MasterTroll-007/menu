@@ -3,12 +3,12 @@ package cz.menu.service;
 import cz.menu.dto.BMRDto;
 import cz.menu.dto.MenuDto;
 import cz.menu.entity.BMR;
-import cz.menu.entity.Client;
+import cz.client.entity.Client;
 import cz.menu.entity.Menu;
+import cz.menu.exception.MenuException;
 import cz.menu.model.Sex;
-import cz.menu.repository.BmrRepository;
-import cz.menu.repository.ClientRepository;
-import cz.menu.repository.MenuRepository;
+import cz.repository.BmrRepository;
+import cz.repository.MenuRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,16 +18,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 
-import java.util.Optional;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class MenuService implements IMenuService {
 
     private final MenuRepository menuRepository;
-    private final ClientRepository clientRepository;
-    private final BmrRepository bmrRepository;
 
     @Override
     @Transactional
@@ -44,8 +40,10 @@ public class MenuService implements IMenuService {
 
     @Override
     @Transactional
-    public void saveBmr(Model model, BMRDto bmrDto, Long menuId) {
-        Menu menuEntity = menuRepository.findById(menuId).get();
+    public void saveBmr(Model model, BMRDto bmrDto, Long menuId) throws MenuException {
+        Menu menuEntity = menuRepository.findById(menuId)
+                .orElseThrow(() -> new MenuException("Jídelníček nenalezen."));
+
         BMR bmrEntity = bmrEntityMapper(bmrDto);
 
         if (menuEntity.getClient().getBmr() == null) {
@@ -65,16 +63,16 @@ public class MenuService implements IMenuService {
     }
 
     @Override
-    public void calculateBMR(Model model, Long menuId) throws Exception {
-        Menu menu = menuRepository.getReferenceById(menuId);
-        Optional<Client> client = clientRepository.findById(menu.getClient().getId());
-        if (client.isEmpty())
-            throw new Exception();
+    public void calculateBMR(Model model, Long menuId) throws MenuException {
+        Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(() -> new MenuException("Jídelníček nenalezen."));
 
-        BMR bmr = getBmr(menu, client.get());
+        Client client = menu.getClient();
+        BMR bmr = getBmr(menu, client);
+
         model.addAttribute("model", model);
-        model.addAttribute("sex", client.get().getSex());
-        model.addAttribute("fullname", client.get().getFullName());
+        model.addAttribute("sex", client.getSex());
+        model.addAttribute("fullname", client.getFullName());
         model.addAttribute("bmr", bmr);
     }
 

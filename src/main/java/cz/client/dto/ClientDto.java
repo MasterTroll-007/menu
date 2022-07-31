@@ -1,4 +1,4 @@
-package cz.menu.dto;
+package cz.client.dto;
 
 import cz.menu.model.Sex;
 import lombok.AllArgsConstructor;

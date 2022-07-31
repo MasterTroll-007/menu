@@ -2,6 +2,7 @@ package cz.menu.control;
 
 import cz.menu.dto.BMRDto;
 import cz.menu.dto.MenuDto;
+import cz.menu.exception.MenuException;
 import cz.menu.service.IMenuService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -35,13 +36,15 @@ public class MenuController {
     }
 
     @GetMapping(value = "/{menuId}")
-    public String bmrForm(@PathVariable("menuId") Long menuId, Model model, @ModelAttribute MenuDto menuDto) throws Exception {
+    public String bmrForm(@PathVariable("menuId") Long menuId, Model model, @ModelAttribute MenuDto menuDto)
+            throws MenuException {
         menuService.calculateBMR(model, menuId);
         return BMR_FORM;
     }
 
     @PostMapping(value = "/{menuId}")
-    public String saveBmrForm(@PathVariable("menuId") Long menuId, Model model, @ModelAttribute BMRDto bmrDto) {
+    public String saveBmrForm(@PathVariable("menuId") Long menuId, Model model, @ModelAttribute BMRDto bmrDto)
+            throws MenuException {
         menuService.saveBmr(model, bmrDto, menuId);
         return REDIRECT_MEAL_PLAN + menuId;
     }

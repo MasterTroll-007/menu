@@ -1,6 +1,8 @@
-package cz.menu.entity;
+package cz.client.entity;
 
 
+import cz.menu.entity.AbstractPersistable;
+import cz.menu.entity.BMR;
 import cz.menu.model.Sex;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +14,6 @@ import java.io.Serializable;
 @Setter
 @Entity
 public class Client extends AbstractPersistable implements Serializable {
-    private Long id;
 
     @Enumerated(EnumType.STRING)
     private Sex sex;

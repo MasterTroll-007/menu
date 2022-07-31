@@ -1,4 +1,4 @@
-package cz.menu.repository;
+package cz.repository;
 
 import cz.menu.entity.BMR;
 import org.springframework.data.jpa.repository.JpaRepository;

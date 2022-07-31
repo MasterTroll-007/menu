@@ -1,5 +1,7 @@
-package cz.menu.entity;
+package cz.recipe.entity;
 
+import cz.ingredient.entity.Ingredient;
+import cz.menu.entity.AbstractPersistable;
 import lombok.Getter;
 import lombok.Setter;
 

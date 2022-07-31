@@ -1,10 +1,10 @@
-package cz.menu.repository;
+package cz.repository;
 
 
-import cz.menu.entity.Menu;
+import cz.client.entity.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MenuRepository extends JpaRepository<Menu, Long> {
+public interface ClientRepository extends JpaRepository<Client, Long> {
 }

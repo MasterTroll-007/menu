@@ -1,5 +1,6 @@
-package cz.menu.dto;
+package cz.recipe.dto;
 
+import cz.ingredient.dto.IngredientDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
