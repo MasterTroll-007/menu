@@ -1,12 +1,9 @@
 package cz.ingredient.entity;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import cz.menu.entity.AbstractPersistable;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
-import org.springframework.lang.Nullable;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Entity;
@@ -25,7 +22,11 @@ public class Ingredient extends AbstractPersistable implements Serializable {
     private int carbohydrates;
     private int fats;
     private int fibre;
-    private int kJ = 0;
+    private int kJ;
+
+    public void _setKj() {
+        this.kJ = proteins * 17 + carbohydrates * 17 + fats * 38;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -33,7 +34,7 @@ public class Ingredient extends AbstractPersistable implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Ingredient ingredient = (Ingredient) o;
-        return  Objects.equals(name, ingredient.name) &&
+        return Objects.equals(name, ingredient.name) &&
                 Objects.equals(proteins, ingredient.proteins) &&
                 Objects.equals(carbohydrates, ingredient.carbohydrates) &&
                 Objects.equals(fats, ingredient.fats) &&

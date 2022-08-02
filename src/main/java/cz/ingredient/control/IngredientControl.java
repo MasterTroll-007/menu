@@ -23,6 +23,7 @@ import java.util.stream.IntStream;
 public class IngredientControl {
 
     private static final String INGREDIENT_DETAIL = "ingredients/detail";
+    private static final String NEW_INGREDIENT = "ingredients/add";
     private static final String INGREDIENT_LIST = "ingredients/list";
 
     private final IIngredientService ingredientService;
@@ -42,10 +43,10 @@ public class IngredientControl {
     }
 
     @GetMapping
-    public String getList(Model model, @RequestParam(name= "page", defaultValue = "1") Integer currentPage,
-                          @RequestParam(name="size", defaultValue = "10") Integer size,
-                          @RequestParam(name="sortField", required=false, defaultValue = "id") String sortField,
-                          @RequestParam(name="sortDir", required = false, defaultValue = "asc") String sortDir) {
+    public String getList(Model model, @RequestParam(name = "page", defaultValue = "1") Integer currentPage,
+                          @RequestParam(name = "size", defaultValue = "10") Integer size,
+                          @RequestParam(name = "sortField", required = false, defaultValue = "id") String sortField,
+                          @RequestParam(name = "sortDir", required = false, defaultValue = "asc") String sortDir) {
         Page<IngredientDto> ingredientPage = ingredientService.findPaginated(currentPage, size, sortField, sortDir);
 
         model.addAttribute("ingredientPage", ingredientPage);
@@ -61,7 +62,6 @@ public class IngredientControl {
             model.addAttribute("totalPages", ingredientPage.getTotalPages());
             model.addAttribute("sortDir", sortDir);
             model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
-
         }
 
         return INGREDIENT_LIST;
@@ -72,6 +72,11 @@ public class IngredientControl {
     public IngredientDto addIngredient(@RequestAttribute IngredientDto ingredientDto) {
         Ingredient updatedEntity = ingredientService.addIngredient(ingredientDto);
         return new IngredientDto(updatedEntity);
+    }
+
+    @GetMapping("/new")
+    public String newIngredientForm(Model model) {
+        return NEW_INGREDIENT;
     }
 
     @PostMapping("/{id}/edit")

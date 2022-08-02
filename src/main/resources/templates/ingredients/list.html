@@ -4,13 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Ingredience</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
-    <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <link href="https://nightly.datatables.net/css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
-    <script src="https://nightly.datatables.net/js/jquery.dataTables.min.js"></script>
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
-
 </head>
 <body>
 
@@ -20,96 +16,104 @@
 
 <div>
 
-    <table class="mt-5 table table-striped table-hover table-dark">
-        <thead>
-        <tr>
-            <th>
-                <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber}, sortField='id', sortDir=${reverseSortDir})}">
-                    #
-                </a>
-            </th>
-            <th>
-                <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber}, sortField='name', sortDir=${reverseSortDir})}">
-                    Název
-                </a>
-            </th>
-            <th>
-                <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber}, sortField='proteins', sortDir=${reverseSortDir})}">
-                    Proteiny
-                </a>
-            </th>
-            <th>
-                <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber}, sortField='carbohydrates', sortDir=${reverseSortDir})}">
-                    Sacharidy
-                </a>
-            </th>
-            <th>
-                <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber}, sortField='fats', sortDir=${reverseSortDir})}">
-                    Tuky
-                </a>
-            </th>
-            <th>
-                <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber}, sortField='fibre', sortDir=${reverseSortDir})}">
-                    Vláknina
-                </a>
-            </th>
-            <th>
-                <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber}, sortField='kJ', sortDir=${reverseSortDir})}">
-                    kJ
-                </a>
-            </th>
-            <th>
-                Akce
-            </th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="ingredient, iStat : ${ingredientPage.content}" class="opacity-75">
-            <td scope="row" th:text="${ingredient.id}"></td>
-            <td th:text="${ingredient.name}"></td>
-            <td th:text="${ingredient.proteins}"></td>
-            <td th:text="${ingredient.carbohydrates}"></td>
-            <td th:text="${ingredient.fats}"></td>
-            <td th:text="${ingredient.fibre}"></td>
-            <td th:text="${ingredient.kJ}"></td>
-            <td>
-                <a th:href="@{/ingredients/edit/{id}(id=${ingredient.id})}" class="opacity-100 btn btn-primary">
-                    Upravit
-                </a>
-                <a th:href="@{/ingredients/delete/{ingredientId}/{currentPage}
-                (ingredientId=${ingredient.id}, currentPage=${currentPage})}" class="opacity-100 ms-5 btn btn-danger">
-                    Smazat
-                </a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+    <div class="container-fluid col-12">
+        <table class="mt-5 table table-sm table-striped table-hover table-dark">
+            <thead>
+            <tr>
+                <th class="text-center col-1">
+                    <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber}, sortField='id', sortDir=${reverseSortDir})}">
+                        Id
+                    </a>
+                </th>
+                <th class="text-center col-2">
+                    <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber}, sortField='name', sortDir=${reverseSortDir})}">
+                        Název
+                    </a>
+                </th>
+                <th class="text-center col-1">
+                    <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber}, sortField='proteins', sortDir=${reverseSortDir})}">
+                        Proteiny
+                    </a>
+                </th>
+                <th class="text-center col-1">
+                    <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber}, sortField='carbohydrates', sortDir=${reverseSortDir})}">
+                        Sacharidy
+                    </a>
+                </th>
+                <th class="text-center col-1">
+                    <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber}, sortField='fats', sortDir=${reverseSortDir})}">
+                        Tuky
+                    </a>
+                </th>
+                <th class="text-center col-1">
+                    <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber}, sortField='fibre', sortDir=${reverseSortDir})}">
+                        Vláknina
+                    </a>
+                </th>
+                <th class="text-center col-1">
+                    <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber}, sortField='kJ', sortDir=${reverseSortDir})}">
+                        kJ
+                    </a>
+                </th>
+                <th class="text-center col-1">
+                </th>
+                <th class="text-center col-1">
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="ingredient, iStat : ${ingredientPage.content}">
+                <td class="text-center align-middle opacity-75" scope="row" th:text="${'#' + ingredient.id}"></td>
+                <td class="text-center align-middle opacity-75" th:text="${ingredient.name}"></td>
+                <td class="text-center align-middle opacity-75" th:text="${ingredient.proteins}"></td>
+                <td class="text-center align-middle opacity-75" th:text="${ingredient.carbohydrates}"></td>
+                <td class="text-center align-middle opacity-75" th:text="${ingredient.fats}"></td>
+                <td class="text-center align-middle opacity-75" th:text="${ingredient.fibre}"></td>
+                <td class="text-center align-middle opacity-75" th:text="${ingredient.kJ}"></td>
+                <td class="text-center align-middle">
+                    <a th:href="@{/ingredients/edit/{id}(id=${ingredient.id})}"
+                       class="opacity-100 btn btn-primary">
+                        Upravit
+                    </a>
+                </td>
+                <td class="text-center align-middle">
+                    <a th:href="@{/ingredients/delete/{ingredientId}/{currentPage}(ingredientId=${ingredient.id}, currentPage=${currentPage})}"
+                       class="opacity-100 btn btn-danger">
+                        Smazat
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
 
-    <footer class="panel-footer text-center">
-        Celkem záznamů: [[${totalItems}]] : Stránka [[${currentPage}]] z [[${totalPages}]]
-    </footer>
-    <ul class="mt-2 pagination justify-content-center opacity-75">
-        <li class="page-item"
-            th:if="${ingredientPage.totalPages > 1}">
-            <a th:href="@{/ingredients(size=${ingredientPage.size}, page=1)}" class="page-link">
-                První
-            </a>
-        </li>
-        <li class="page-item" th:classappend="${pageNumber==ingredientPage.number + 1} ? active"
-            th:if="${ingredientPage.totalPages > 0}" th:each="pageNumber : ${pageNumbers}">
-            <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber})}"
-               th:text="${pageNumber}"
-               class="page-link">
-            </a>
-        </li>
-        <li class="page-item"
-            th:if="${ingredientPage.totalPages > 1}">
-            <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${totalPages})}" class="page-link">
-                Poslední
-            </a>
-        </li>
-
-    </ul>
-</div>
+        <div class="bg-dark opacity-75">
+            <footer class="panel-footer text-center">
+                <p style="color:white">
+                    Celkem záznamů: [[${totalItems}]] : Stránka [[${currentPage}]] z [[${totalPages}]]
+                </p>
+            </footer>
+            <ul class="mt-2 mb-2 pagination justify-content-center ">
+                <li class="page-item"
+                    th:if="${ingredientPage.totalPages > 1}">
+                    <a th:href="@{/ingredients(size=${ingredientPage.size}, page=1)}" class="page-link">
+                        První
+                    </a>
+                </li>
+                <li class="page-item" th:classappend="${pageNumber==ingredientPage.number + 1} ? active"
+                    th:if="${ingredientPage.totalPages > 0}" th:each="pageNumber : ${pageNumbers}">
+                    <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber})}"
+                       th:text="${pageNumber}"
+                       class="page-link">
+                    </a>
+                </li>
+                <li class="page-item"
+                    th:if="${ingredientPage.totalPages > 1}">
+                    <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${totalPages})}" class="page-link">
+                        Poslední
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </body>
 </html>
