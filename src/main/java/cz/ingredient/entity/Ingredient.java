@@ -24,7 +24,7 @@ public class Ingredient extends AbstractPersistable implements Serializable {
     private int fibre;
     private int kJ;
 
-    public void _setKj() {
+    public void calculateKj() {
         this.kJ = proteins * 17 + carbohydrates * 17 + fats * 38;
     }
 

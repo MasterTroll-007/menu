@@ -55,7 +55,9 @@ public class IngredientService implements IIngredientService {
 
     private Ingredient ingredientEntityMapper(IngredientDto dto) {
         ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(dto, Ingredient.class);
+        Ingredient ingredient = modelMapper.map(dto, Ingredient.class);
+        ingredient.calculateKj();
+        return ingredient;
     }
 
 }

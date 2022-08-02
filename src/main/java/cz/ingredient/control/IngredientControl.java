@@ -1,7 +1,6 @@
 package cz.ingredient.control;
 
 import cz.ingredient.dto.IngredientDto;
-import cz.ingredient.entity.Ingredient;
 import cz.ingredient.exception.IngredientException;
 import cz.ingredient.service.IIngredientService;
 import lombok.AllArgsConstructor;
@@ -25,13 +24,10 @@ public class IngredientControl {
     private static final String INGREDIENT_DETAIL = "ingredients/detail";
     private static final String NEW_INGREDIENT = "ingredients/add";
     private static final String INGREDIENT_LIST = "ingredients/list";
+    private static final String REDIRECT_INGREDIENT_LIST = "redirect:/ingredients";
 
     private final IIngredientService ingredientService;
 
-/*    @GetMapping
-    public String getFarmersPage() {
-        return INGREDIENT_LIST;
-    }*/
 
     @GetMapping("/{id}/edit")
     public String updateIngredientForm(Model model, @PathVariable Long id) throws IngredientException {
@@ -61,21 +57,23 @@ public class IngredientControl {
             model.addAttribute("currentPage", currentPage);
             model.addAttribute("totalPages", ingredientPage.getTotalPages());
             model.addAttribute("sortDir", sortDir);
+            model.addAttribute("sortField", sortField);
             model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
         }
 
         return INGREDIENT_LIST;
     }
 
-    @PostMapping
-    @ResponseBody
-    public IngredientDto addIngredient(@RequestAttribute IngredientDto ingredientDto) {
-        Ingredient updatedEntity = ingredientService.addIngredient(ingredientDto);
-        return new IngredientDto(updatedEntity);
+    @PostMapping("/new")
+    public String addIngredient(@ModelAttribute(name = "ingredient") IngredientDto ingredientDto) {
+        ingredientService.addIngredient(ingredientDto);
+        return REDIRECT_INGREDIENT_LIST;
     }
 
     @GetMapping("/new")
-    public String newIngredientForm(Model model) {
+    public String newIngredientForm(Model model, @ModelAttribute IngredientDto ingredientDto) {
+        model.addAttribute("model", model);
+        model.addAttribute("ingredient", ingredientDto);
         return NEW_INGREDIENT;
     }
 
@@ -84,10 +82,14 @@ public class IngredientControl {
         return ingredientService.updateIngredientForm(model, id);
     }
 
-    @GetMapping("/delete/{id}/{pageNo}")
-    public String deleteIngredient(@PathVariable Long id, @PathVariable Long pageNo) {
+    @GetMapping("/delete")
+    public String deleteIngredient(@RequestParam(name = "id") Long id,
+                                   @RequestParam(name = "page") Long page,
+                                   @RequestParam(name = "size") Long size,
+                                   @RequestParam(name = "sortField") String sortField,
+                                   @RequestParam(name = "sortDir") String sortDir) {
         ingredientService.deleteIngredient(id);
-        return "redirect:/ingredients?page=" + pageNo;
+        return "redirect:/ingredients?size=" + size + "&page=" + page + "&sortField=" + sortField + "&sortDir=" + sortDir;
     }
 
     @ExceptionHandler(Exception.class)
