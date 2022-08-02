@@ -14,7 +14,7 @@ public interface IIngredientService {
 
     IngredientDto updateIngredientForm(Model model, Long ingredientId) throws IngredientException;
 
-    void removeIngredient(Long ingredientId);
+    void deleteIngredient(Long ingredientId);
 
-    Page<IngredientDto> findPaginated(Pageable pageable);
+    Page<IngredientDto> findPaginated(int currentPage, int pageSize, String sortField, String sortDir);
 }

@@ -13,36 +13,103 @@
 
 </head>
 <body>
+
 <div th:insert="navbar :: navbar"></div>
 
+<div id="bg"></div>
 
-<div layout:fragment="content">
+<div>
 
-    <h2>Seznam ingrediencí</h2>
-
-    <table border="1">
+    <table class="mt-5 table table-striped table-hover table-dark">
         <thead>
         <tr>
-            <th th:text="#{msg.id}" />
-            <th th:text="#{msg.name}" />
+            <th>
+                <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber}, sortField='id', sortDir=${reverseSortDir})}">
+                    #
+                </a>
+            </th>
+            <th>
+                <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber}, sortField='name', sortDir=${reverseSortDir})}">
+                    Název
+                </a>
+            </th>
+            <th>
+                <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber}, sortField='proteins', sortDir=${reverseSortDir})}">
+                    Proteiny
+                </a>
+            </th>
+            <th>
+                <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber}, sortField='carbohydrates', sortDir=${reverseSortDir})}">
+                    Sacharidy
+                </a>
+            </th>
+            <th>
+                <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber}, sortField='fats', sortDir=${reverseSortDir})}">
+                    Tuky
+                </a>
+            </th>
+            <th>
+                <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber}, sortField='fibre', sortDir=${reverseSortDir})}">
+                    Vláknina
+                </a>
+            </th>
+            <th>
+                <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber}, sortField='kJ', sortDir=${reverseSortDir})}">
+                    kJ
+                </a>
+            </th>
+            <th>
+                Akce
+            </th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="book, iStat : ${bookPage.content}"
-            th:style="${iStat.odd}? 'font-weight: bold;'"
-            th:alt-title="${iStat.even}? 'even' : 'odd'">
-            <td th:text="${book.id}" />
-            <td th:text="${book.name}" />
+        <tr th:each="ingredient, iStat : ${ingredientPage.content}" class="opacity-75">
+            <td scope="row" th:text="${ingredient.id}"></td>
+            <td th:text="${ingredient.name}"></td>
+            <td th:text="${ingredient.proteins}"></td>
+            <td th:text="${ingredient.carbohydrates}"></td>
+            <td th:text="${ingredient.fats}"></td>
+            <td th:text="${ingredient.fibre}"></td>
+            <td th:text="${ingredient.kJ}"></td>
+            <td>
+                <a th:href="@{/ingredients/edit/{id}(id=${ingredient.id})}" class="opacity-100 btn btn-primary">
+                    Upravit
+                </a>
+                <a th:href="@{/ingredients/delete/{ingredientId}/{currentPage}
+                (ingredientId=${ingredient.id}, currentPage=${currentPage})}" class="opacity-100 ms-5 btn btn-danger">
+                    Smazat
+                </a>
+            </td>
         </tr>
         </tbody>
     </table>
-    <div th:if="${bookPage.totalPages > 0}" class="pagination"
-         th:each="pageNumber : ${pageNumbers}">
-        <a th:href="@{/listBooks(size=${bookPage.size}, page=${pageNumber})}"
-           th:text=${pageNumber}
-           th:class="${pageNumber==bookPage.number + 1} ? active"></a>
-    </div>
 
+    <footer class="panel-footer text-center">
+        Celkem záznamů: [[${totalItems}]] : Stránka [[${currentPage}]] z [[${totalPages}]]
+    </footer>
+    <ul class="mt-2 pagination justify-content-center opacity-75">
+        <li class="page-item"
+            th:if="${ingredientPage.totalPages > 1}">
+            <a th:href="@{/ingredients(size=${ingredientPage.size}, page=1)}" class="page-link">
+                První
+            </a>
+        </li>
+        <li class="page-item" th:classappend="${pageNumber==ingredientPage.number + 1} ? active"
+            th:if="${ingredientPage.totalPages > 0}" th:each="pageNumber : ${pageNumbers}">
+            <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${pageNumber})}"
+               th:text="${pageNumber}"
+               class="page-link">
+            </a>
+        </li>
+        <li class="page-item"
+            th:if="${ingredientPage.totalPages > 1}">
+            <a th:href="@{/ingredients(size=${ingredientPage.size}, page=${totalPages})}" class="page-link">
+                Poslední
+            </a>
+        </li>
+
+    </ul>
 </div>
 </body>
 </html>

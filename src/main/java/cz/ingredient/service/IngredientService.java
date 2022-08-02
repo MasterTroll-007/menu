@@ -7,10 +7,7 @@ import cz.repository.IngredientRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -34,35 +31,27 @@ public class IngredientService implements IIngredientService {
     @Override
     public IngredientDto updateIngredientForm(Model model, Long ingredientId) throws IngredientException {
         Ingredient entity = ingredientRepository.findById(ingredientId)
-                .orElseThrow(() -> new IngredientException("Nenalezeny žádné ingredience"));
+                .orElseThrow(() -> new IngredientException("Nenalezeny žádné ingredience s daným ID=" + ingredientId));
         return new IngredientDto(entity);
     }
 
     @Override
-    public void removeIngredient(Long ingredientId) {
+    public void deleteIngredient(Long ingredientId) {
         ingredientRepository.deleteById(ingredientId);
     }
 
     @Override
-    public Page<IngredientDto> findPaginated(Pageable pageable) {
-        int pageSize = pageable.getPageSize();
-        int currentPage = pageable.getPageNumber();
-        int startItem = currentPage * pageSize;
-        List<Ingredient> ingredients = ingredientRepository.findAll();
+    public Page<IngredientDto> findPaginated(int currentPage, int pageSize, String sortField, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortField).ascending() :
+                Sort.by(sortField).descending();
+        Pageable pageable = PageRequest.of(currentPage - 1, pageSize, sort);
+
+        Page<Ingredient> ingredients = ingredientRepository.findAll(pageable);
         List<IngredientDto> ingredientsDto = new ArrayList<>();
         ingredients.forEach(ingredient ->
             ingredientsDto.add(new IngredientDto(ingredient)));
 
-        List<IngredientDto> list;
-
-        if (ingredientsDto.size() < startItem) {
-            list = Collections.emptyList();
-        } else {
-            int toIndex = Math.min(startItem + pageSize, ingredientsDto.size());
-            list = ingredientsDto.subList(startItem, toIndex);
-        }
-
-        return new PageImpl<>(list, PageRequest.of(currentPage, pageSize), ingredients.size());
+        return new PageImpl<>(ingredientsDto, pageable, ingredients.getTotalElements());
     }
 
     private Ingredient ingredientEntityMapper(IngredientDto dto) {
