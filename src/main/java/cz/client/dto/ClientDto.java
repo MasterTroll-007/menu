@@ -1,5 +1,7 @@
 package cz.client.dto;
 
+import cz.client.entity.Client;
+import cz.ingredient.entity.Ingredient;
 import cz.menu.model.Sex;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,4 +21,14 @@ public class ClientDto implements Serializable {
     private int weight;
     private int height;
     private float bmrCoef;
+    public ClientDto(Client client) {
+        this.id = client.getId();
+        this.sex = client.getSex();
+        this.firstName = client.getFirstName();
+        this.secondName = client.getSecondName();
+        this.age = client.getAge();
+        this.weight = client.getWeight();
+        this.height = client.getHeight();
+        this.bmrCoef = client.getBmrCoef();
+    }
 }

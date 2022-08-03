@@ -7,6 +7,8 @@ import cz.client.entity.Client;
 import cz.menu.entity.Menu;
 import cz.menu.exception.MenuException;
 import cz.menu.model.Sex;
+import cz.recipe.dto.RecipeDto;
+import cz.recipe.entity.Recipe;
 import cz.repository.BmrRepository;
 import cz.repository.MenuRepository;
 
@@ -14,9 +16,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.util.Precision;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -36,6 +42,20 @@ public class MenuService implements IMenuService {
         log.info("Ulozene data: {}", savedEntity);
 
         return savedEntity;
+    }
+
+    @Override
+    public Page<MenuDto> findPaginated(int currentPage, int pageSize, String sortField, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortField).ascending() :
+                Sort.by(sortField).descending();
+        Pageable pageable = PageRequest.of(currentPage - 1, pageSize, sort);
+
+        Page<Menu> menus = menuRepository.findAll(pageable);
+        List<MenuDto> menusDto = new ArrayList<>();
+        menus.forEach(menu ->
+                menusDto.add(new MenuDto(menu)));
+
+        return new PageImpl<>(menusDto, pageable, menus.getTotalElements());
     }
 
     @Override

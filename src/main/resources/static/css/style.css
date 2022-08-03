@@ -11,6 +11,15 @@
     background-size: cover;
     background-image: url('img/ingredients-bg.jpg');
 }
+#recipes-bg {
+    position: fixed;
+    top: 0;
+    z-index: -100;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-image: url('img/recipe-bg.jpg');
+}
 
 .pagination > li > a {
     background-color: #000000;

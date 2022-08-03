@@ -21,11 +21,20 @@
                         Jídelníčky
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" th:href="@{/ingredients}">Seznam</a></li>
-                        <li><a class="dropdown-item" th:href="@{/menu}">Přidat nový</a></li>
+                        <li><a class="dropdown-item" th:href="@{/menu}">Seznam</a></li>
+                        <li><a class="dropdown-item" th:href="@{/menu/new}"><b>+</b> Přidat</a></li>
                     </ul>
                 </li>
-                <li><a class="nav-link" th:href="@{/recipes}">Recepty</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                       aria-expanded="true">
+                        Ingredience
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/recipes}">Seznam</a></li>
+                        <li><a class="dropdown-item" th:href="@{/recipes/new}"><b>+</b> Přidat</a></li>
+                    </ul>
+                </li>
 
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
@@ -34,7 +43,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" th:href="@{/ingredients}">Seznam</a></li>
-                        <li><a class="dropdown-item" th:href="@{/ingredients/new}">Přidat novou</a></li>
+                        <li><a class="dropdown-item" th:href="@{/ingredients/new}"><b>+</b> Přidat</a></li>
                     </ul>
                 </li>
             </ul>
