@@ -12,7 +12,7 @@ public interface IMenuService {
     Menu saveMenuForm(Model model, MenuDto menuDto);
 
     void saveBmr(Model model, BMRDto bmrDto, Long menuId) throws MenuException;
-    Page<MenuDto> findPaginated(int currentPage, int pageSize, String sortField, String sortDir)
+    Page<MenuDto> findPaginated(int currentPage, int pageSize, String sortField, String sortDir);
     void calculateBMR(Model model, Long menuId) throws MenuException;
 
     void mealPlan(Model model, Long menuId);
