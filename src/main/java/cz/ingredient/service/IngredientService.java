@@ -53,6 +53,12 @@ public class IngredientService implements IIngredientService {
         return new PageImpl<>(ingredientsDto, pageable, ingredients.getTotalElements());
     }
 
+    @Override
+    public List<Ingredient> getIngredients(String term) throws IngredientException {
+        return ingredientRepository.findByNameIgnoreCaseLike("%" + term + "%")
+                .orElseThrow(() -> new IngredientException("Ingredience nenalezena."));
+    }
+
     private Ingredient ingredientEntityMapper(IngredientDto dto) {
         ModelMapper modelMapper = new ModelMapper();
         Ingredient ingredient = modelMapper.map(dto, Ingredient.class);

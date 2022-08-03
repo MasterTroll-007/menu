@@ -57,7 +57,7 @@
                 </td>
                 <td class="text-center align-middle">
                     <a th:href="@{/recipes/delete(size=${recipePage.size}, id=${recipe.id}, page=${currentPage}, sortField=${sortField}, sortDir=${sortDir})}"
-                       class="btn btn-danger red">
+                       class="btn btn-danger red" onclick="return confirm('Opravdu chcete smazat tento recept?');">
                         Smazat
                     </a>
                 </td>

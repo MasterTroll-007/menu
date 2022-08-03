@@ -80,7 +80,7 @@
                 </td>
                 <td class="text-center align-middle">
                     <a th:href="@{/ingredients/delete(size=${ingredientPage.size}, id=${ingredient.id}, page=${currentPage}, sortField=${sortField}, sortDir=${sortDir})}"
-                       class="btn btn-danger red">
+                       class="btn btn-danger red" onclick="return confirm('Opravdu chcete smazat tuto ingredienci?');">
                         Smazat
                     </a>
                 </td>

@@ -78,7 +78,7 @@
                 </td>
                 <td class="text-center align-middle">
                     <a th:href="@{/clients/delete(size=${clientPage.size}, id=${client.id}, page=${currentPage}, sortField=${sortField}, sortDir=${sortDir})}"
-                       class="btn btn-danger red">
+                       class="btn btn-danger red" onclick="return confirm('Opravdu chcete smazat tohoto klienta?');">
                         Smazat
                     </a>
                 </td>

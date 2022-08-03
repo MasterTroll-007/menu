@@ -1,6 +1,7 @@
 package cz.ingredient.control;
 
 import cz.ingredient.dto.IngredientDto;
+import cz.ingredient.entity.Ingredient;
 import cz.ingredient.exception.IngredientException;
 import cz.ingredient.service.IIngredientService;
 import lombok.AllArgsConstructor;
@@ -62,6 +63,12 @@ public class IngredientControl {
         }
 
         return INGREDIENT_LIST;
+    }
+
+    @ResponseBody
+    @GetMapping(path = "/find")
+    public List<Ingredient> list(String term) throws IngredientException {
+        return ingredientService.getIngredients(term);
     }
 
     @PostMapping("/new")

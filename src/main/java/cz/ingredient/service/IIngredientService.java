@@ -6,10 +6,13 @@ import cz.ingredient.exception.IngredientException;
 import org.springframework.data.domain.Page;
 import org.springframework.ui.Model;
 
+import java.util.List;
+
 public interface IIngredientService {
 
     Ingredient addIngredient(IngredientDto ingredientDto);
     IngredientDto updateIngredientForm(Model model, Long ingredientId) throws IngredientException;
     void deleteIngredient(Long ingredientId);
     Page<IngredientDto> findPaginated(int currentPage, int pageSize, String sortField, String sortDir);
+    List<Ingredient> getIngredients(String term) throws IngredientException;
 }

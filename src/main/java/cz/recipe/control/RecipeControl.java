@@ -59,17 +59,17 @@ public class RecipeControl {
         return RECIPE_LIST;
     }
 
+    @GetMapping("/new")
+    public String newRecipe(Model model, @ModelAttribute RecipeDto recipeDto) {
+        model.addAttribute("model", model);
+        model.addAttribute("recipe", recipeDto);
+        return NEW_RECIPE;
+    }
+
     @PostMapping("/new")
     public String addRecipe(@ModelAttribute(name = "recipe") RecipeDto recipeDto) {
         recipeService.addRecipe(recipeDto);
         return REDIRECT_RECIPE_LIST;
-    }
-
-    @GetMapping("/new")
-    public String newRecipeForm(Model model, @ModelAttribute RecipeDto recipeDto) {
-        model.addAttribute("model", model);
-        model.addAttribute("recipe", recipeDto);
-        return NEW_RECIPE;
     }
 
     @PostMapping("/{id}/edit")
