@@ -26,17 +26,17 @@ public class ClientController {
     private static final String BMR_FORM = "client/bmrForm";
     private static final String MEAL_PLAN = "client/mealPlan";
     private static final String REDIRECT_BMR_FORM = "redirect:/clients/";
-    private static final String REDIRECT_MEAL_PLAN = "redirect:/mealPlan/";
+    private static final String REDIRECT_CLIENTS_LIST = "redirect:/clients";
 
     @GetMapping("/new")
-    public String newClientForm(Model model, @ModelAttribute ClientDto clientDto) {
+    public String newClient(Model model, @ModelAttribute ClientDto clientDto) {
         model.addAttribute("model", model);
         model.addAttribute("client", clientDto);
         return MENU_FORM;
     }
 
     @GetMapping
-    public String getList(Model model, @RequestParam(name = "page", defaultValue = "1") Integer currentPage,
+    public String getClients(Model model, @RequestParam(name = "page", defaultValue = "1") Integer currentPage,
                           @RequestParam(name = "size", defaultValue = "10") Integer size,
                           @RequestParam(name = "sortField", required = false, defaultValue = "id") String sortField,
                           @RequestParam(name = "sortDir", required = false, defaultValue = "asc") String sortDir) {
@@ -62,27 +62,27 @@ public class ClientController {
     }
 
     @PostMapping("/new")
-    public String saveMenuForm(Model model, @ModelAttribute ClientDto clientDto) {
+    public String saveClient(Model model, @ModelAttribute ClientDto clientDto) {
         Long clientId = clientService.saveClientForm(model, clientDto).getId();
         return REDIRECT_BMR_FORM + clientId;
     }
 
     @GetMapping(value = "/{id}")
-    public String bmrForm(@PathVariable("id") Long clientId, Model model, @ModelAttribute ClientDto clientDto)
+    public String bmr(@PathVariable("id") Long clientId, Model model, @ModelAttribute ClientDto clientDto)
             throws MenuException, ClientException {
         clientService.calculateBMR(model, clientId);
         return BMR_FORM;
     }
 
     @PostMapping(value = "/{id}")
-    public String saveBmrForm(@PathVariable("id") Long clientId, Model model, @ModelAttribute BMRDto bmrDto)
+    public String saveBmr(@PathVariable("id") Long clientId, Model model, @ModelAttribute BMRDto bmrDto)
             throws MenuException, ClientException {
         clientService.saveBmr(model, bmrDto, clientId);
-        return REDIRECT_MEAL_PLAN + clientId;
+        return REDIRECT_CLIENTS_LIST;
     }
 
     @GetMapping(value = "/mealPlan/{clientId}")
-    public String mealPlanForm(@PathVariable("clientId") Long clientId, Model model, @ModelAttribute ClientDto clientDto) {
+    public String mealPlan(@PathVariable("clientId") Long clientId, Model model, @ModelAttribute ClientDto clientDto) {
         return MEAL_PLAN;
     }
 

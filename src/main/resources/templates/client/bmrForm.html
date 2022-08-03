@@ -15,63 +15,53 @@
 <div th:insert="navbar :: navbar">  </div>
 
 <form method="post" th:object="${bmr}">
-    <div class="ms-5 container-md">
-
-        <div class="col-3 mt-3 menu-form">
-            <div class="input-group">
-                <label class="col-6 input-group-text" for="name">Celé jméno</label>
-                <input disabled th:value="${fullname}" id="name" type="text" class="form-control">
-            </div>
-        </div>
-
-        <div class="col-3 mt-3 menu-form">
-            <div class="input-group">
-                <label class="col-6 input-group-text" for="sex">Pohlaví</label>
-                <input disabled th:field="${sex.gender}" id="sex" type="text" class="form-control">
-            </div>
-        </div>
-
-        <div class="col-3 mt-3 menu-form">
-            <div class="input-group">
-                <label class="col-6 input-group-text" for="carbohydrates">Sacharidy v g</label>
-                <input th:field="${bmr.carbohydrates}" id="carbohydrates" type="text" class="form-control kJcalculation">
-            </div>
-        </div>
-
-        <div class="col-3 mt-3 menu-form">
-            <div class="input-group">
-                <label class="col-6 input-group-text" for="proteins">Proteiny v g</label>
-                <input th:field="${bmr.proteins}" id="proteins" type="text" class="form-control kJcalculation">
-            </div>
-        </div>
-
-        <div class="col-3 mt-3 menu-form">
-            <div class="input-group">
-                <label class="col-6 input-group-text" for="fats">Tuky v g</label>
-                <input th:field="${bmr.fats}" id="fats" type="text" class="form-control kJcalculation">
-            </div>
-        </div>
-
-        <div class="col-3 mt-3 menu-form">
-            <div class="input-group">
-                <label class="col-6 input-group-text" for="fibres">Vláknina v g</label>
-                <input th:field="${bmr.fibres}" id="fibres" type="text" class="form-control">
-            </div>
-        </div>
-
-        <div class="col-3 mt-3 menu-form">
-            <div class="input-group">
-                <label class="col-6 input-group-text" for="overallKj">Hodnota kJ dle g</label>
-                <input th:field="${bmr.kJ}" id="overallKj" type="text" class="form-control kJcalculationReverse">
-            </div>
-        </div>
-
-        <div class="col-3 mt-3 menu-form">
-            <div class="input-group">
-                <label class="col-6 input-group-text" for="kJ">kJ vypočítáno</label>
-                <input disabled th:value="${bmr.kJ}" id="kJ" type="text" class="form-control">
-            </div>
-        </div>
+    <div class="container-fluid col-3 opacity-75">
+        <table class="mt-5 table table-dark" style="margin-bottom: 0;">
+            <tbody>
+            <tr>
+                <th class="align-middle col-4">Celé jméno</th>
+                <td class="text-center align-middle col-6" th:text="${fullname}"></td>
+            </tr>
+            <tr>
+                <th class="align-middle col-4">Pohlaví</th>
+                <td class="text-center align-middle col-6" th:text="${sex.gender}"></td>
+            </tr>
+            <tr>
+                <th class="align-middle col-4">Sacharidy</th>
+                <td class="text-center align-middle col-6">
+                    <input th:field="${bmr.carbohydrates}" id="carbohydrates" type="text" class="form-control table-input kJcalculation">
+                </td>
+            </tr>
+            <tr>
+                <th class="align-middle col-4">Proteiny</th>
+                <td class="text-center align-middle col-6">
+                    <input th:field="${bmr.proteins}" id="proteins" type="text" class="form-control table-input kJcalculation">
+                </td>
+            </tr>
+            <tr>
+                <th class="align-middle col-4">Tuky</th>
+                <td class="text-center align-middle col-6">
+                    <input th:field="${bmr.fats}" id="fats" type="text" class="form-control table-input kJcalculation">
+                </td>
+            </tr>
+            <tr>
+                <th class="align-middle col-4">Vláknina</th>
+                <td class="text-center align-middle col-6">
+                    <input th:field="${bmr.fibres}" id="fibres" type="text" class="table-input form-control">
+                </td>
+            </tr>
+            <tr>
+                <th class="align-middle col-4">Hodnota kJ dle g</th>
+                <td class="text-center align-middle col-6">
+                    <input th:field="${bmr.kJ}" id="overallKj" type="text" class="form-control table-input kJcalculationReverse">
+                </td>
+            </tr>
+            <tr>
+                <th class="align-middle col-4">kJ vypočítáno</th>
+                <td class="text-center align-middle col-6" th:text="${bmr.kJ}"></td>
+            </tr>
+            </tbody>
+        </table>
 
         <button type="submit" class="mt-3 btn btn-primary">Další</button>
 
@@ -87,18 +77,18 @@
             $('#carbohydrates').val(Math.round(carbs));
             $('#proteins').val(Math.round(proteins));
             $('#fats').val(Math.round(fats));
-            $('#overallKj').val(addCommas(Math.round((carbs * 17 + proteins * 17) + (fats * 38))));
+            $('#overallKj').val(Math.round((carbs * 17 + proteins * 17) + (fats * 38)));
         });
         $(".kJcalculationReverse").change(function () {
             var overall = $('#overallKj').val();
-            $('#carbohydrates').val(addCommas(Math.round(overall * 0.45 / 17)));
-            $('#proteins').val(addCommas(Math.round(overall * 0.25 / 17)));
-            $('#fats').val(addCommas(Math.round(overall * 0.30 / 38)));
-            $('#overallKj').val(addCommas(overall));
+            $('#carbohydrates').val(Math.round(overall * 0.45 / 17));
+            $('#proteins').val(Math.round(overall * 0.25 / 17));
+            $('#fats').val(Math.round(overall * 0.30 / 38));
+            $('#overallKj').val(overall);
         });
     });
 
-    function addCommas(nStr)
+/*    function addCommas(nStr)
     {
         nStr += '';
         x = nStr.split('.');
@@ -109,7 +99,7 @@
             x1 = x1.replace(rgx, '$1' + '.' + '$2');
         }
         return x1 + x2;
-    }
+    }*/
 </script>
 
 </body>

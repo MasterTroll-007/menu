@@ -84,3 +84,6 @@ th a {
 .red:hover {
     background: rgba(255, 0, 0, 0.3);
 }
+.table-input {
+    text-align: center;
+}
