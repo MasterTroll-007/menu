@@ -22,6 +22,7 @@ public class MenuController {
     private final IMenuService menuService;
 
     private static final String MENU_FORM = "menu/form";
+    private static final String MENU_LIST = "menu/list";
     private static final String BMR_FORM = "menu/bmrForm";
     private static final String MEAL_PLAN = "menu/mealPlan";
     private static final String REDIRECT_BMR_FORM = "redirect:/menu/";
@@ -39,25 +40,25 @@ public class MenuController {
                           @RequestParam(name = "size", defaultValue = "10") Integer size,
                           @RequestParam(name = "sortField", required = false, defaultValue = "id") String sortField,
                           @RequestParam(name = "sortDir", required = false, defaultValue = "asc") String sortDir) {
-        Page<IngredientDto> ingredientPage = menuService.findPaginated(currentPage, size, sortField, sortDir);
+        Page<MenuDto> menuPage = menuService.findPaginated(currentPage, size, sortField, sortDir);
 
-        model.addAttribute("ingredientPage", ingredientPage);
+        model.addAttribute("ingredientPage", menuPage);
 
-        int totalPages = ingredientPage.getTotalPages();
+        int totalPages = menuPage.getTotalPages();
         if (totalPages > 0) {
             List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
                     .boxed()
                     .toList();
             model.addAttribute("pageNumbers", pageNumbers);
-            model.addAttribute("totalItems", ingredientPage.getTotalElements());
+            model.addAttribute("totalItems", menuPage.getTotalElements());
             model.addAttribute("currentPage", currentPage);
-            model.addAttribute("totalPages", ingredientPage.getTotalPages());
+            model.addAttribute("totalPages", menuPage.getTotalPages());
             model.addAttribute("sortDir", sortDir);
             model.addAttribute("sortField", sortField);
             model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
         }
 
-        return INGREDIENT_LIST;
+        return MENU_LIST;
     }
 
     @PostMapping("/new")
