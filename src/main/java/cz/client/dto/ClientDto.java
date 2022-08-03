@@ -1,17 +1,14 @@
 package cz.client.dto;
 
 import cz.client.entity.Client;
-import cz.ingredient.entity.Ingredient;
 import cz.menu.model.Sex;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.io.Serializable;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class ClientDto implements Serializable {
     private Long id;
     private Sex sex;
@@ -21,6 +18,12 @@ public class ClientDto implements Serializable {
     private int weight;
     private int height;
     private float bmrCoef;
+    private BMRDto bmr;
+
+    public String getFullName() {
+        return this.getFirstName() + " " + this.getSecondName();
+    }
+
     public ClientDto(Client client) {
         this.id = client.getId();
         this.sex = client.getSex();
@@ -30,5 +33,10 @@ public class ClientDto implements Serializable {
         this.weight = client.getWeight();
         this.height = client.getHeight();
         this.bmrCoef = client.getBmrCoef();
+        if (client.getBmr() != null) {
+            this.bmr = new BMRDto(client.getBmr());
+        } else {
+            this.bmr = new BMRDto();
+        }
     }
 }

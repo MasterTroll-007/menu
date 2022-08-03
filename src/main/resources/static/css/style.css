@@ -1,4 +1,4 @@
-.menu-form {
+.client-form {
     min-width: 300px;
 }
 
@@ -19,6 +19,24 @@
     height: 100%;
     background-size: cover;
     background-image: url('img/recipe-bg.jpg');
+}
+#clients-bg {
+    position: fixed;
+    top: 0;
+    z-index: -100;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-image: url('img/clients-bg.jpg');
+}
+#login-bg {
+    position: fixed;
+    top: 0;
+    z-index: -100;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-image: url('img/login-bg.jpg');
 }
 
 .pagination > li > a {

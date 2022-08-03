@@ -1,5 +1,6 @@
-package cz.menu.entity;
+package cz.client.entity;
 
+import cz.menu.entity.AbstractPersistable;
 import lombok.Getter;
 import lombok.Setter;
 

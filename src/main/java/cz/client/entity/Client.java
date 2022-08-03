@@ -2,7 +2,6 @@ package cz.client.entity;
 
 
 import cz.menu.entity.AbstractPersistable;
-import cz.menu.entity.BMR;
 import cz.menu.model.Sex;
 import lombok.Getter;
 import lombok.Setter;
