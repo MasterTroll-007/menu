@@ -25,9 +25,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
+        String[] staticResources  =  {
+                "/css/**",
+                "/css/img/**"
+        };
 
         //@formatter:off
         http.authorizeRequests()
+                .antMatchers(staticResources).permitAll()
                 .antMatchers("/login").permitAll()
                 .antMatchers("/**/**").hasAnyRole("USER", "ADMIN")
                 .antMatchers("/**").hasAnyRole("USER", "ADMIN")
@@ -35,7 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/", true)
+                .defaultSuccessUrl("/clients", true)
                 .permitAll()
                 .and()
                 .csrf().disable()
