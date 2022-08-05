@@ -41,7 +41,7 @@
             <div class="container col-4">
                 <table class="mt-5 table table-dark opacity-75" id="ingredientsTable" style="margin-bottom: 0;">
                     <tbody id="new_ingredient">
-                    <input type="hidden" value="1" id="total_ingredients">
+                    <input type="hidden" value="0" id="total_ingredients">
                     <tr>
                         <th class="text-center align-middle col-3">Ingredience</th>
                         <th class="text-center align-middle text-center col-6">Gramáž</th>
@@ -75,7 +75,7 @@
                     </tr>
                     <tr>
                         <th class="align-middle col-3">Tuky</th>
-                        <td class="text-center align-middle col-6" >
+                        <td class="text-center align-middle col-6">
                             <input type="text" disabled value="0" id="fatsTotal">
                         </td>
                     </tr>
@@ -108,7 +108,6 @@
     </form>
 </div>
 <script>
-
 
     $('.remove').click(function () {
         $(this).closest('tr').remove();
@@ -161,15 +160,50 @@
         });
     });
 
+    function calculateNutrients() {
+
+    }
+
     function addIngredient() {
         var new_ingredient_no = parseInt($('#total_ingredients').val()) + 1;
-        var new_input = '<tr id="ingredient_id_' + new_ingredient_no + '"> <td class="text-center align-middle col-6"> <select multiple="multiple" id="recipeSelect_' + new_ingredient_no + '" th:field="${recipe.ingredients}" class="form-control input-lg"> </select> </td> <td class="text-center align-middle col-3"> <input id="grams_' + new_ingredient_no + '" type="text" class="form-control"> </td> <td class="text-center align-middle col-3"> <a class="remove btn btn-danger">X</a> </td></tr>';
+        var new_input = '<tr id="ingredient_id_' + new_ingredient_no + '"> <td class="text-center align-middle col-6"> ' +
+            '<select multiple="multiple" id="recipeSelect_' + new_ingredient_no + '" th:field="${recipe.ingredients}" class="form-control input-lg select2-calc"> </select> ' +
+            '</td> <td class="text-center align-middle col-3"> <input onchange="calculateNutrients()" id="grams_' + new_ingredient_no + '" type="text" class="form-control"> ' +
+            '</td> <td class="text-center align-middle col-3"> <a class="remove btn btn-danger">X</a>' +
+            '<input hidden id="nutr_fats_' + new_ingredient_no + '" type="text">' +
+            '<input hidden id="nutr_carbs_' + new_ingredient_no + '" type="text">' +
+            '<input hidden id="nutr_fibre_' + new_ingredient_no + '" type="text">' +
+            '<input hidden id="nutr_proteins_' + new_ingredient_no + '" type="text">' +
+            '</td></tr>';
         $('#new_ingredient').append(new_input);
         $('#total_ingredients').val(new_ingredient_no)
 
         $('.remove').click(function () {
             $(this).closest('tr').remove();
-            $('#total_ingredients').val($('#total_ingredients').val()-1);
+            $('#total_ingredients').val($('#total_ingredients').val() - 1);
+        });
+
+        $('#recipeSelect_' + new_ingredient_no).on('select2:select', function (e) {
+            var data = e.params.data;
+            console.log(data);
+            console.log(e.params);
+
+            $('#nutr_fats_' + new_ingredient_no).val(data.carbs)
+            $('#nutr_carbs_' + new_ingredient_no).val(data.proteins)
+            $('#nutr_fibre_' + new_ingredient_no).val(data.fats)
+            $('#nutr_proteins_' + new_ingredient_no).val(data.fibre)
+
+        });
+
+        $('#recipeSelect_' + new_ingredient_no).on('select2:unselect', function (e) {
+            var data = e.params.data;
+            console.log(data);
+            console.log(e.params);
+            $('#carbohydratesTotal').val($('#carbohydratesTotal').val() * 1 - data.carbs)
+            $('#proteinsTotal').val($('#proteinsTotal').val() * 1 - data.proteins)
+            $('#fatsTotal').val($('#fatsTotal').val() * 1 - data.fats)
+            $('#fibreTotal').val($('#fibreTotal').val() * 1 - data.fibre)
+
         });
 
         $('#recipeSelect_' + new_ingredient_no).select2({
@@ -185,11 +219,14 @@
                 processResults: function (data) {
                     return {
                         results: $.map(data, function (item) {
-                            $('#carbohydratesTotal').val();
                             return {
                                 id: item.id,
                                 slug: item.name,
-                                text: item.name
+                                text: item.name,
+                                fats: item.fats,
+                                proteins: item.proteins,
+                                fibre: item.fibre,
+                                carbs: item.carbohydrates
                             }
                         })
                     };
