@@ -3,15 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Přidat recept</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.2/assets/css/docs.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
-            crossorigin="anonymous"></script>
+    crossorigin="anonymous"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css"
+          rel="stylesheet">
+    <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 
 </head>
 <body>
@@ -26,7 +29,7 @@
                 <table class="mt-5 table table-dark opacity-75" style="margin-bottom: 0;">
                     <tbody>
                     <tr>
-                        <th class="align-middle col-3">Recept</th>
+                        <th class="align-middle col-3">Recept
                         <td class="text-center align-middle col-6">
                             <input id="bmrCoef" type="text" class="form-control"
                                    placeholder="název receptu">
@@ -42,6 +45,7 @@
                 <table class="mt-5 table table-dark opacity-75" id="ingredientsTable" style="margin-bottom: 0;">
                     <tbody id="new_ingredient">
                     <input type="hidden" value="0" id="total_ingredients">
+                    <input type="hidden" value="0" id="new_ingredient_id">
                     <tr>
                         <th class="text-center align-middle col-3">Ingredience</th>
                         <th class="text-center align-middle text-center col-6">Gramáž</th>
@@ -64,31 +68,31 @@
                     <tr>
                         <th class="align-middle col-3">Sacharidy</th>
                         <td class="text-center align-middle col-6">
-                            <input type="text" disabled value="0" id="carbohydratesTotal">
+                            <input class="recipe-disabled-input" type="text" disabled value="0" id="carbsTotal">
                         </td>
                     </tr>
                     <tr>
                         <th class="align-middle col-3">Bílkoviny</th>
                         <td class="text-center align-middle col-6">
-                            <input type="text" disabled value="0" id="proteinsTotal">
+                            <input class="recipe-disabled-input" type="text" disabled value="0" id="proteinsTotal">
                         </td>
                     </tr>
                     <tr>
                         <th class="align-middle col-3">Tuky</th>
                         <td class="text-center align-middle col-6">
-                            <input type="text" disabled value="0" id="fatsTotal">
+                            <input class="recipe-disabled-input" type="text" disabled value="0" id="fatsTotal">
                         </td>
                     </tr>
                     <tr>
                         <th class="align-middle col-3">Vláknina</th>
                         <td class="text-center align-middle col-6">
-                            <input type="text" disabled value="0" id="fibreTotal">
+                            <input class="recipe-disabled-input" type="text" disabled value="0" id="fibreTotal">
                         </td>
                     </tr>
                     <tr>
                         <th class="align-middle col-3">kJ</th>
                         <td class="text-center align-middle col-6">
-                            <input type="text" disabled value="0" id="kJTotal">
+                            <input class="recipe-disabled-input" type="text" disabled value="0" id="kJTotal">
                         </td>
                     </tr>
 
@@ -108,10 +112,6 @@
     </form>
 </div>
 <script>
-
-    $('.remove').click(function () {
-        $(this).closest('tr').remove();
-    });
 
     $('.recipeSelect').select2({
         //maximumSelectionLength: 1,
@@ -137,73 +137,99 @@
         }
     });
 
-    //TODO calculation of overall nutrients/kJ for whole recipe
-    //TODO adding/removing ingredients into/from recipe
-    //TODO updating amount of grams of each ingredient and calculate appropriate nutrients/kJ
+    //TODO overall Kj for each ingredient
+    //TODO tooltip with nutrients
     //TODO posting list of ingredients with description to controller
-    $(document).ready(function () {
-        $(".kJcalculation").change(function () {
-            var carbs = $('#carbohydrates').val();
-            var proteins = $('#proteins').val();
-            var fats = $('#fats').val();
-            $('#carbohydrates').val(Math.round(carbs));
-            $('#proteins').val(Math.round(proteins));
-            $('#fats').val(Math.round(fats));
-            $('#overallKj').val(Math.round((carbs * 17 + proteins * 17) + (fats * 38)));
-        });
-        $(".kJcalculationReverse").change(function () {
-            var overall = $('#overallKj').val();
-            $('#carbohydrates').val(Math.round(overall * 0.45 / 17));
-            $('#proteins').val(Math.round(overall * 0.25 / 17));
-            $('#fats').val(Math.round(overall * 0.30 / 38));
-            $('#overallKj').val(overall);
-        });
-    });
-
     function calculateNutrients() {
+        var proteins = 0, fats = 0, carbs = 0, fibre = 0, kJ = 0
+        var ingrCount = $('#new_ingredient').children().length;
+        for (i = 3; i <= ingrCount; i++) {
+            var wholeId = $('#new_ingredient').children()[i].id
+            var id = wholeId.slice(wholeId.lastIndexOf('_') + 1, wholeId.length);
+            var grams = $("#grams_" + id).val();
+            if (grams !== "Vyberte ingredienci") {
+                var gramCoef = grams / 100
+                fats = Math.round(fats + parseInt($("#nutr_fats_" + id).val()) * gramCoef)
+                carbs = Math.round(carbs + parseInt($("#nutr_carbs_" + id).val()) * gramCoef)
+                fibre = Math.round(fibre + parseInt($("#nutr_fibre_" + id).val()) * gramCoef)
+                proteins = Math.round(proteins + parseInt($("#nutr_proteins_" + id).val()) * gramCoef)
+                kJ = Math.round((carbs * 17 + proteins * 17) + (fats * 38))
+
+
+                document.getElementById('ingr_info_' + id).setAttribute('data-bs-title',
+                    "<table>" +
+                        "<tr>" +
+                            "<td>Sacharidy</td><td>'+carbs+'</td>" +
+                        "</tr><tr>" +
+                            "<td>Proteiny</td><td>'+proteins+'</td>" +
+                        "</tr><tr><" +
+                            "td>Tuky</td><td>'+fats+'</td>" +
+                        "</tr><tr>" +
+                            "<td>Vláknina</td><td>'+fibre+'</td>" +
+                        "</tr><tr>" +
+                            "<td>kJ</td><td>'+kJ+'</td>" +
+                        "</tr>" +
+                    "</table>")
+            }
+
+            $('#carbsTotal').val(carbs);
+            $('#proteinsTotal').val(proteins);
+            $('#fatsTotal').val(fats);
+            $('#fibreTotal').val(fibre);
+            $('#kJTotal').val(kJ);
+        }
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 
     }
 
     function addIngredient() {
-        var new_ingredient_no = parseInt($('#total_ingredients').val()) + 1;
+        var total_ingredients = parseInt($('#total_ingredients').val()) + 1;
+        var new_ingredient_no = 0;
+        while ($('#recipeSelect_' + new_ingredient_no).val() != null) {
+            new_ingredient_no += 1;
+        }
+
         var new_input = '<tr id="ingredient_id_' + new_ingredient_no + '"> <td class="text-center align-middle col-6"> ' +
             '<select multiple="multiple" id="recipeSelect_' + new_ingredient_no + '" th:field="${recipe.ingredients}" class="form-control input-lg select2-calc"> </select> ' +
-            '</td> <td class="text-center align-middle col-3"> <input onchange="calculateNutrients()" id="grams_' + new_ingredient_no + '" type="text" class="form-control"> ' +
-            '</td> <td class="text-center align-middle col-3"> <a class="remove btn btn-danger">X</a>' +
+            '</td> <td class="text-center align-middle col-3"> <input onchange="calculateNutrients()" id="grams_' + new_ingredient_no + '" type="text" class="recipe-input form-control"> ' +
+            '</td> <td class="text-center align-middle col-3"> <button type="button" class="btn ingr-button btn-secondary ingredient-tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-html="true" id="ingr_info_' + new_ingredient_no + '">i</button>' +
+            '</td> <td class="text-center align-middle col-3"> <a type="button" id="remove_' + new_ingredient_no + '" class="btn btn-danger">X</a>' +
             '<input hidden id="nutr_fats_' + new_ingredient_no + '" type="text">' +
             '<input hidden id="nutr_carbs_' + new_ingredient_no + '" type="text">' +
             '<input hidden id="nutr_fibre_' + new_ingredient_no + '" type="text">' +
             '<input hidden id="nutr_proteins_' + new_ingredient_no + '" type="text">' +
             '</td></tr>';
         $('#new_ingredient').append(new_input);
-        $('#total_ingredients').val(new_ingredient_no)
+        $('#total_ingredients').val(total_ingredients)
 
-        $('.remove').click(function () {
+        $("#grams_" + new_ingredient_no).prop("disabled", true);
+        $("#grams_" + new_ingredient_no).val("Vyberte ingredienci");
+
+        $('#remove_' + new_ingredient_no).click(function () {
             $(this).closest('tr').remove();
-            $('#total_ingredients').val($('#total_ingredients').val() - 1);
+            $('#total_ingredients').val(parseInt($('#total_ingredients').val()) - 1);
+            calculateNutrients()
         });
 
         $('#recipeSelect_' + new_ingredient_no).on('select2:select', function (e) {
             var data = e.params.data;
-            console.log(data);
-            console.log(e.params);
-
-            $('#nutr_fats_' + new_ingredient_no).val(data.carbs)
-            $('#nutr_carbs_' + new_ingredient_no).val(data.proteins)
-            $('#nutr_fibre_' + new_ingredient_no).val(data.fats)
-            $('#nutr_proteins_' + new_ingredient_no).val(data.fibre)
-
+            $('#nutr_fats_' + new_ingredient_no).val(data.fats)
+            $('#nutr_carbs_' + new_ingredient_no).val(data.carbs)
+            $('#nutr_fibre_' + new_ingredient_no).val(data.fibre)
+            $('#nutr_proteins_' + new_ingredient_no).val(data.proteins)
+            $("#grams_" + new_ingredient_no).prop("disabled", false);
+            $("#grams_" + new_ingredient_no).val("");
         });
 
         $('#recipeSelect_' + new_ingredient_no).on('select2:unselect', function (e) {
-            var data = e.params.data;
-            console.log(data);
-            console.log(e.params);
-            $('#carbohydratesTotal').val($('#carbohydratesTotal').val() * 1 - data.carbs)
-            $('#proteinsTotal').val($('#proteinsTotal').val() * 1 - data.proteins)
-            $('#fatsTotal').val($('#fatsTotal').val() * 1 - data.fats)
-            $('#fibreTotal').val($('#fibreTotal').val() * 1 - data.fibre)
-
+            $('#nutr_fats_' + new_ingredient_no).val(0)
+            $('#nutr_carbs_' + new_ingredient_no).val(0)
+            $('#nutr_fibre_' + new_ingredient_no).val(0)
+            $('#nutr_proteins_' + new_ingredient_no).val(0)
+            $("#grams_" + new_ingredient_no).prop("disabled", true);
+            $("#grams_" + new_ingredient_no).val("Vyberte ingredienci");
+            calculateNutrients()
         });
 
         $('#recipeSelect_' + new_ingredient_no).select2({
