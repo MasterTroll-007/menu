@@ -141,6 +141,7 @@
     //TODO tooltip with nutrients
     //TODO posting list of ingredients with description to controller
     function calculateNutrients() {
+        var proteinsTotal = 0, fatsTotal = 0, carbsTotal = 0, fibreTotal = 0, kJTotal = 0
         var proteins = 0, fats = 0, carbs = 0, fibre = 0, kJ = 0
         var ingrCount = $('#new_ingredient').children().length;
         for (i = 3; i < ingrCount; i++) {
@@ -150,7 +151,7 @@
             if (grams !== "Vyberte ingredienci") {
                 var gramCoef = grams / 100
                 fats = Math.round(parseInt($("#nutr_fats_" + id).val()) * gramCoef)
-                carbs = Math.round(parseInt($("##nutr_carbs_" + id).val()) * gramCoef)
+                carbs = Math.round(parseInt($("#nutr_carbs_" + id).val()) * gramCoef)
                 proteins = Math.round(parseInt($("#nutr_fibre_" + id).val()) * gramCoef)
                 fibre = Math.round(parseInt($("#nutr_proteins_" + id).val()) * gramCoef)
                 kJ = Math.round((carbs * 17 + proteins * 17) + (fats * 38))
