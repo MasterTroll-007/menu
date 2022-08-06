@@ -7,7 +7,7 @@
     <link href="https://getbootstrap.com/docs/5.2/assets/css/docs.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
-    crossorigin="anonymous"></script>
+            crossorigin="anonymous"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
@@ -22,7 +22,7 @@
 <div th:insert="navbar :: navbar"></div>
 
 <div class="container-fluid">
-    <form method="post" th:object="${client}">
+    <form id="recipeForm" method="post" th:object="${recipe}">
         <div class="row mt-5">
             <div class="container col-4">
 
@@ -31,7 +31,7 @@
                     <tr>
                         <th class="align-middle col-3">Recept
                         <td class="text-center align-middle col-6">
-                            <input id="bmrCoef" type="text" class="form-control"
+                            <input th:field="${recipe.name}" id="recipeName" type="text" class="form-control"
                                    placeholder="název receptu">
                         </td>
                     </tr>
@@ -102,7 +102,7 @@
 
 
             <div class="container col-4 opacity-75">
-                <textarea class="form-control" id="recipeDescription" placeholder="Popis receptu" rows="20"
+                <textarea th:field="${recipe.description}" class="form-control" id="recipeDescription" placeholder="Popis receptu" rows="20"
                           name="notes"></textarea>
                 <div class="row mx-auto col-5">
                     <button type="submit" class="mt-5 btn btn-success btn-lg">Uložit</button>
@@ -112,6 +112,21 @@
     </form>
 </div>
 <script>
+
+/*    $("#recipeForm").submit(function (event) {
+
+        // Stop form from submitting normally
+        event.preventDefault();
+
+        var data
+        $.ajax({
+            type: "POST",
+            url: "/recipes/new",
+            data: data,
+            success: "",
+            dataType: ""
+        });
+    })*/
 
     $('.recipeSelect').select2({
         //maximumSelectionLength: 1,
@@ -147,7 +162,8 @@
         for (i = 3; i < ingrCount; i++) {
             var wholeId = $('#new_ingredient').children()[i].id
             var id = wholeId.slice(wholeId.lastIndexOf('_') + 1, wholeId.length);
-            var grams = $("#grams_" + id).val();
+            var grams = $("#recipeIngredients"+id+"\\.grams").val();
+            //var grams = $("#grams_" + id).val();
             if (grams !== "Množství") {
                 var gramCoef = grams / 100
                 fats = Math.round(parseInt($("#nutr_fats_" + id).val()) * gramCoef)
@@ -162,7 +178,7 @@
                 proteinsTotal = Math.round(proteinsTotal + proteins)
                 kJTotal = Math.round((carbsTotal * 17 + proteinsTotal * 17) + (fatsTotal * 38))
 
-                var content = "<table class='tooltip-table'><tr><td>Sacharidy</td><td>"+carbs+"g</td></tr><tr><td>Proteiny</td><td>"+proteins+"g</td></tr><tr><td>Tuky</td><td>"+fats+"g</td></tr><tr><td>Vláknina</td><td>"+fibre+"g</td></tr><tr><td>kJ</td><td>"+kJ+"kJ</td></tr></table>";
+                var content = "<table class='tooltip-table'><tr><td>Sacharidy</td><td>" + carbs + "g</td></tr><tr><td>Proteiny</td><td>" + proteins + "g</td></tr><tr><td>Tuky</td><td>" + fats + "g</td></tr><tr><td>Vláknina</td><td>" + fibre + "g</td></tr><tr><td>kJ</td><td>" + kJ + "kJ</td></tr></table>";
 
                 new bootstrap.Tooltip('#ingr_info_' + id, {
                     sanitize: false,
@@ -186,13 +202,18 @@
     function addIngredient() {
         var total_ingredients = parseInt($('#total_ingredients').val()) + 1;
         var new_ingredient_no = 0;
-        while ($('#recipeSelect_' + new_ingredient_no).val() != null) {
+        while ($("#recipeIngredients"+new_ingredient_no+"\\.ingredientId").val() != null) {
             new_ingredient_no += 1;
         }
 
+        var gramsSelector = "#recipeIngredients"+new_ingredient_no+"\\.grams";
+        var select2Selector = "#recipeIngredients"+new_ingredient_no+"\\.ingredientId";
+
+
+
         var new_input = '<tr id="ingredient_id_' + new_ingredient_no + '"> <td class="text-center align-middle col-6"> ' +
-            '<select multiple="multiple" id="recipeSelect_' + new_ingredient_no + '" th:field="${recipe.ingredients}" class="form-control input-lg select2-calc"> </select> ' +
-            '</td> <td class="text-center align-middle col-3"> <input onchange="calculateNutrients()" id="grams_' + new_ingredient_no + '" type="text" class="recipe-input form-control"> ' +
+            '<select multiple="multiple" id="recipeIngredients'+new_ingredient_no+'.ingredientId" name="recipeIngredients['+new_ingredient_no+'].ingredientId" class="form-control input-lg select2-calc"> </select> ' +
+            '</td> <td class="text-center align-middle col-3"> <input onchange="calculateNutrients()" id="recipeIngredients'+new_ingredient_no+'.grams" name="recipeIngredients['+new_ingredient_no+'].grams" type="text" class="recipe-input form-control"> ' +
             '</td> <td class="text-center align-middle col-3"> <button disabled type="button" class="btn ingr-button btn-secondary ingredient-tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-html="true" id="ingr_info_' + new_ingredient_no + '" data-bs-title=" ">i</button>' +
             '</td> <td class="text-center align-middle col-3"> <a type="button" id="remove_' + new_ingredient_no + '" class="btn btn-danger">X</a>' +
             '<input hidden id="nutr_fats_' + new_ingredient_no + '" type="text">' +
@@ -206,8 +227,8 @@
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 
-        $("#grams_" + new_ingredient_no).prop("disabled", true);
-        $("#grams_" + new_ingredient_no).val("Množství");
+        $(gramsSelector).prop("disabled", true);
+        $(gramsSelector).val("Množství");
 
         $('#remove_' + new_ingredient_no).click(function () {
             $(this).closest('tr').remove();
@@ -215,29 +236,29 @@
             calculateNutrients()
         });
 
-        $('#recipeSelect_' + new_ingredient_no).on('select2:select', function (e) {
+        $(select2Selector).on('select2:select', function (e) {
             var data = e.params.data;
             $('#nutr_fats_' + new_ingredient_no).val(data.fats)
             $('#nutr_carbs_' + new_ingredient_no).val(data.carbs)
             $('#nutr_fibre_' + new_ingredient_no).val(data.fibre)
             $('#nutr_proteins_' + new_ingredient_no).val(data.proteins)
             $("#ingr_info_" + new_ingredient_no).prop("disabled", false);
-            $("#grams_" + new_ingredient_no).prop("disabled", false);
-            $("#grams_" + new_ingredient_no).val("");
+            $(gramsSelector).prop("disabled", false);
+            $(gramsSelector).val("");
         });
 
-        $('#recipeSelect_' + new_ingredient_no).on('select2:unselect', function (e) {
+        $(select2Selector).on('select2:unselect', function (e) {
             $('#nutr_fats_' + new_ingredient_no).val(0)
             $('#nutr_carbs_' + new_ingredient_no).val(0)
             $('#nutr_fibre_' + new_ingredient_no).val(0)
             $('#nutr_proteins_' + new_ingredient_no).val(0)
             $("#ingr_info_" + new_ingredient_no).prop("disabled", true);
-            $("#grams_" + new_ingredient_no).prop("disabled", true);
-            $("#grams_" + new_ingredient_no).val("Množství");
+            $(gramsSelector).prop("disabled", true);
+            $(gramsSelector).val("Množství");
             calculateNutrients()
         });
 
-        $('#recipeSelect_' + new_ingredient_no).select2({
+        $(select2Selector).select2({
             maximumSelectionLength: 1,
             minimumInputLength: 1,
             ajax: {

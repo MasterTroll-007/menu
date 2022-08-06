@@ -20,18 +20,9 @@ public class RecipeControl {
     private static final String RECIPE_DETAIL = "recipes/detail";
     private static final String NEW_RECIPE = "recipes/add";
     private static final String RECIPE_LIST = "recipes/list";
-    private static final String REDIRECT_RECIPE_LIST = "redirect:/recipes";
+    private static final String REDIRECT_DETAIL = "redirect:/recipes/detail/";
 
     private final IRecipeService recipeService;
-
-    @GetMapping("/{id}/edit")
-    public String updateRecipeForm(Model model, @PathVariable Long id) throws RecipeException {
-        RecipeDto recipeDto = recipeService.updateRecipeForm(model, id);
-        model.addAttribute("recipe", recipeDto);
-        model.addAttribute("model", model);
-
-        return RECIPE_DETAIL;
-    }
 
     @GetMapping
     public String getList(Model model, @RequestParam(name = "page", defaultValue = "1") Integer currentPage,
@@ -68,13 +59,24 @@ public class RecipeControl {
 
     @PostMapping("/new")
     public String addRecipe(@ModelAttribute(name = "recipe") RecipeDto recipeDto) {
-        recipeService.addRecipe(recipeDto);
-        return REDIRECT_RECIPE_LIST;
+        Long recipeId = recipeService.addRecipe(recipeDto).getId();
+        return REDIRECT_DETAIL + recipeId;
     }
 
-    @PostMapping("/{id}/edit")
-    public RecipeDto updateRecipe(@PathVariable Long id, Model model) throws RecipeException {
-        return recipeService.updateRecipeForm(model, id);
+    @PostMapping("/detail/{id}")
+    public String updateRecipe(@PathVariable Long id, Model model) throws RecipeException {
+        recipeService.updateRecipeForm(model, id);
+        return REDIRECT_DETAIL + id;
+    }
+
+    @GetMapping("/detail/{id}")
+    public String updateRecipeForm(Model model, @PathVariable Long id) throws RecipeException {
+        RecipeDto recipeDto = recipeService.findById(id);
+
+        model.addAttribute("recipe", recipeDto);
+        model.addAttribute("model", model);
+
+        return RECIPE_DETAIL;
     }
 
     @GetMapping("/delete")

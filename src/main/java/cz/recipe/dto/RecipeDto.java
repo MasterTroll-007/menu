@@ -1,6 +1,5 @@
 package cz.recipe.dto;
 
-import cz.ingredient.dto.IngredientDto;
 import cz.recipe.entity.Recipe;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,15 +16,15 @@ public class RecipeDto implements Serializable {
     private Long id;
     private String name;
     private String description;
-    private List<IngredientDto> ingredients;
+    private List<RecipeIngredientDto> recipeIngredients;
 
     public RecipeDto(Recipe recipe) {
         this.id = recipe.getId();
         this.name = recipe.getName();
         this.description = recipe.getDescription();
-        List<IngredientDto> ingredientDtos = new ArrayList<>();
-        recipe.getIngredients()
-                .forEach(ingredient -> ingredientDtos.add(new IngredientDto(ingredient)));
-        this.ingredients = ingredientDtos;
+        List<RecipeIngredientDto> ingredientDtos = new ArrayList<>();
+        recipe.getRecipeIngredients()
+                .forEach(ingredient -> ingredientDtos.add(new RecipeIngredientDto(ingredient)));
+        this.recipeIngredients = ingredientDtos;
     }
 }

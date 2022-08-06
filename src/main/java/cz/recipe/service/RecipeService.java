@@ -20,15 +20,29 @@ public class RecipeService implements IRecipeService{
     private final RecipeRepository recipeRepository;
 
     @Override
-    public void addRecipe(RecipeDto recipeDto) {
+    public Recipe addRecipe(RecipeDto recipeDto) {
+        recipeDto.setRecipeIngredients(
+                recipeDto.getRecipeIngredients()
+                .stream()
+                .filter(recipeIngredient -> recipeIngredient.getIngredientId() != null)
+                .toList()
+        );
         Recipe recipeEntity = recipeEntityMapper(recipeDto);
-        recipeRepository.save(recipeEntity);
+        return recipeRepository.save(recipeEntity);
+    }
+
+    @Override
+    public RecipeDto findById(Long recipeId) throws RecipeException {
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new RecipeException("Nenalezeny žádný recept s daným ID=" + recipeId));
+        return new RecipeDto(recipe);
     }
 
     @Override
     public RecipeDto updateRecipeForm(Model model, Long recipeId) throws RecipeException {
         Recipe entity = recipeRepository.findById(recipeId)
-                .orElseThrow(() -> new RecipeException("Nenalezeny žádné ingredience s daným ID=" + recipeId));
+                .orElseThrow(() -> new RecipeException("Nenalezeny žádný recept s daným ID=" + recipeId));
+        //TODO execute update
         return new RecipeDto(entity);
     }
 
