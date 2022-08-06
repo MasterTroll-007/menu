@@ -119,10 +119,11 @@ body {
     text-align: center !important;
 }
 
-.ingr-button {
-    white-space: pre-line;
+.ingredient-tooltip {
+    border: 0;
 }
 .custom-tooltip {
-    --bs-tooltip-bg: var(--bs-primary);
+    --bs-tooltip-bg: white;
+    --bs-tooltip-color: black;
 }
 
