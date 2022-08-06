@@ -149,11 +149,17 @@
             var grams = $("#grams_" + id).val();
             if (grams !== "Vyberte ingredienci") {
                 var gramCoef = grams / 100
-                fats = Math.round(fats + parseInt($("#nutr_fats_" + id).val()) * gramCoef)
-                carbs = Math.round(carbs + parseInt($("#nutr_carbs_" + id).val()) * gramCoef)
-                fibre = Math.round(fibre + parseInt($("#nutr_fibre_" + id).val()) * gramCoef)
-                proteins = Math.round(proteins + parseInt($("#nutr_proteins_" + id).val()) * gramCoef)
+                fats = Math.round(parseInt($("#nutr_fats_" + id).val()) * gramCoef)
+                carbs = Math.round(parseInt($("##nutr_carbs_" + id).val()) * gramCoef)
+                proteins = Math.round(parseInt($("#nutr_fibre_" + id).val()) * gramCoef)
+                fibre = Math.round(parseInt($("#nutr_proteins_" + id).val()) * gramCoef)
                 kJ = Math.round((carbs * 17 + proteins * 17) + (fats * 38))
+
+                fatsTotal = Math.round(fatsTotal + fats)
+                carbsTotal = Math.round(carbsTotal + carbs)
+                fibreTotal = Math.round(fibreTotal + fibre)
+                proteinsTotal = Math.round(proteinsTotal + proteins)
+                kJTotal = Math.round((carbsTotal * 17 + proteinsTotal * 17) + (fatsTotal * 38))
 
                 var content = "<table><tr><td>Sacharidy</td><td>"+carbs+"g</td></tr><tr><td>Proteiny</td><td>"+proteins+"g</td></tr><tr><td>Tuky</td><td>"+fats+"g</td></tr><tr><td>Vláknina</td><td>"+fibre+"g</td></tr><tr><td>kJ</td><td>"+kJ+"kJ</td></tr></table>";
 
@@ -167,11 +173,11 @@
 
             }
 
-            $('#carbsTotal').val(carbs);
-            $('#proteinsTotal').val(proteins);
-            $('#fatsTotal').val(fats);
-            $('#fibreTotal').val(fibre);
-            $('#kJTotal').val(kJ);
+            $('#carbsTotal').val(carbsTotal);
+            $('#proteinsTotal').val(proteinsTotal);
+            $('#fatsTotal').val(fatsTotal);
+            $('#fibreTotal').val(fibreTotal);
+            $('#kJTotal').val(kJTotal);
         }
     }
 
