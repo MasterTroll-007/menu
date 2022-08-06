@@ -113,9 +113,10 @@ body {
 }
 
 .recipe-disabled-input {
-    background: #5a5a5a;
+    width: 80px;
+    background: white;
     font-weight: bold;
-    color: white;
+    color: black;
     text-align: center !important;
 }
 
@@ -125,5 +126,17 @@ body {
 .custom-tooltip {
     --bs-tooltip-bg: white;
     --bs-tooltip-color: black;
+    width: 150px;
 }
 
+.tooltip-table tr td:nth-child(1){
+    text-align: left;
+}
+
+.tooltip-table tr td:nth-child(2){
+    text-align: right;
+}
+
+.tooltip-table {
+    width: 100%;
+}

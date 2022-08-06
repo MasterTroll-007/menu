@@ -23,10 +23,10 @@
 
 <div class="container-fluid">
     <form method="post" th:object="${client}">
-        <div class="row">
+        <div class="row mt-5">
             <div class="container col-4">
 
-                <table class="mt-5 table table-dark opacity-75" style="margin-bottom: 0;">
+                <table class="table table-dark opacity-75" style="margin-bottom: 0;">
                     <tbody>
                     <tr>
                         <th class="align-middle col-3">Recept
@@ -40,9 +40,9 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row mt-5">
             <div class="container col-4">
-                <table class="mt-5 table table-dark opacity-75" id="ingredientsTable" style="margin-bottom: 0;">
+                <table class="table table-dark opacity-75" id="ingredientsTable" style="margin-bottom: 0;">
                     <tbody id="new_ingredient">
                     <input type="hidden" value="0" id="total_ingredients">
                     <input type="hidden" value="0" id="new_ingredient_id">
@@ -59,39 +59,39 @@
             </div>
 
             <div class="container col-2 ">
-                <table class="mt-5 table table-dark opacity-75" style="margin-bottom: 0;">
+                <table class="table table-dark opacity-75" style="margin-bottom: 0;">
                     <tbody>
                     <tr>
-                        <th class="align-middle col-3"></th>
-                        <th class="align-middle text-center col-6">Celkem</th>
+                        <th class="align-middle"></th>
+                        <th class="align-middle text-center">Celkem</th>
                     </tr>
                     <tr>
-                        <th class="align-middle col-3">Sacharidy</th>
-                        <td class="text-center align-middle col-6">
+                        <th class="align-middle">Sacharidy</th>
+                        <td class="text-center align-middle">
                             <input class="recipe-disabled-input" type="text" disabled value="0" id="carbsTotal">
                         </td>
                     </tr>
                     <tr>
-                        <th class="align-middle col-3">Bílkoviny</th>
-                        <td class="text-center align-middle col-6">
+                        <th class="align-middle">Bílkoviny</th>
+                        <td class="text-center align-middle">
                             <input class="recipe-disabled-input" type="text" disabled value="0" id="proteinsTotal">
                         </td>
                     </tr>
                     <tr>
-                        <th class="align-middle col-3">Tuky</th>
-                        <td class="text-center align-middle col-6">
+                        <th class="align-middle">Tuky</th>
+                        <td class="text-center align-middle">
                             <input class="recipe-disabled-input" type="text" disabled value="0" id="fatsTotal">
                         </td>
                     </tr>
                     <tr>
-                        <th class="align-middle col-3">Vláknina</th>
-                        <td class="text-center align-middle col-6">
+                        <th class="align-middle">Vláknina</th>
+                        <td class="text-center align-middle">
                             <input class="recipe-disabled-input" type="text" disabled value="0" id="fibreTotal">
                         </td>
                     </tr>
                     <tr>
-                        <th class="align-middle col-3">kJ</th>
-                        <td class="text-center align-middle col-6">
+                        <th class="align-middle">kJ</th>
+                        <td class="text-center align-middle">
                             <input class="recipe-disabled-input" type="text" disabled value="0" id="kJTotal">
                         </td>
                     </tr>
@@ -102,7 +102,7 @@
 
 
             <div class="container col-4 opacity-75">
-                <textarea class="mt-5 form-control" id="recipeDescription" placeholder="Popis receptu" rows="20"
+                <textarea class="form-control" id="recipeDescription" placeholder="Popis receptu" rows="20"
                           name="notes"></textarea>
                 <div class="row mx-auto col-5">
                     <button type="submit" class="mt-5 btn btn-success btn-lg">Uložit</button>
@@ -148,12 +148,12 @@
             var wholeId = $('#new_ingredient').children()[i].id
             var id = wholeId.slice(wholeId.lastIndexOf('_') + 1, wholeId.length);
             var grams = $("#grams_" + id).val();
-            if (grams !== "Vyberte ingredienci") {
+            if (grams !== "Množství") {
                 var gramCoef = grams / 100
                 fats = Math.round(parseInt($("#nutr_fats_" + id).val()) * gramCoef)
                 carbs = Math.round(parseInt($("#nutr_carbs_" + id).val()) * gramCoef)
-                proteins = Math.round(parseInt($("#nutr_fibre_" + id).val()) * gramCoef)
-                fibre = Math.round(parseInt($("#nutr_proteins_" + id).val()) * gramCoef)
+                fibre = Math.round(parseInt($("#nutr_fibre_" + id).val()) * gramCoef)
+                proteins = Math.round(parseInt($("#nutr_proteins_" + id).val()) * gramCoef)
                 kJ = Math.round((carbs * 17 + proteins * 17) + (fats * 38))
 
                 fatsTotal = Math.round(fatsTotal + fats)
@@ -162,15 +162,16 @@
                 proteinsTotal = Math.round(proteinsTotal + proteins)
                 kJTotal = Math.round((carbsTotal * 17 + proteinsTotal * 17) + (fatsTotal * 38))
 
-                var content = "<table><tr><td>Sacharidy</td><td>"+carbs+"g</td></tr><tr><td>Proteiny</td><td>"+proteins+"g</td></tr><tr><td>Tuky</td><td>"+fats+"g</td></tr><tr><td>Vláknina</td><td>"+fibre+"g</td></tr><tr><td>kJ</td><td>"+kJ+"kJ</td></tr></table>";
+                var content = "<table class='tooltip-table'><tr><td>Sacharidy</td><td>"+carbs+"g</td></tr><tr><td>Proteiny</td><td>"+proteins+"g</td></tr><tr><td>Tuky</td><td>"+fats+"g</td></tr><tr><td>Vláknina</td><td>"+fibre+"g</td></tr><tr><td>kJ</td><td>"+kJ+"kJ</td></tr></table>";
 
                 new bootstrap.Tooltip('#ingr_info_' + id, {
-                    sanitize: false
+                    sanitize: false,
+                    container: 'body'
                 })
                 // Returns a Bootstrap tooltip instance
-                const tooltip = bootstrap.Tooltip.getInstance('#ingr_info_' + id)
+                const tooltipElm = bootstrap.Tooltip.getInstance('#ingr_info_' + id)
                 // setContent example
-                tooltip.setContent({'.tooltip-inner': content})
+                tooltipElm.setContent({'.tooltip-inner': content})
 
             }
 
@@ -192,7 +193,7 @@
         var new_input = '<tr id="ingredient_id_' + new_ingredient_no + '"> <td class="text-center align-middle col-6"> ' +
             '<select multiple="multiple" id="recipeSelect_' + new_ingredient_no + '" th:field="${recipe.ingredients}" class="form-control input-lg select2-calc"> </select> ' +
             '</td> <td class="text-center align-middle col-3"> <input onchange="calculateNutrients()" id="grams_' + new_ingredient_no + '" type="text" class="recipe-input form-control"> ' +
-            '</td> <td class="text-center align-middle col-3"> <button type="button" class="btn ingr-button btn-secondary ingredient-tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-html="true" id="ingr_info_' + new_ingredient_no + '" data-bs-title=" ">i</button>' +
+            '</td> <td class="text-center align-middle col-3"> <button disabled type="button" class="btn ingr-button btn-secondary ingredient-tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-html="true" id="ingr_info_' + new_ingredient_no + '" data-bs-title=" ">i</button>' +
             '</td> <td class="text-center align-middle col-3"> <a type="button" id="remove_' + new_ingredient_no + '" class="btn btn-danger">X</a>' +
             '<input hidden id="nutr_fats_' + new_ingredient_no + '" type="text">' +
             '<input hidden id="nutr_carbs_' + new_ingredient_no + '" type="text">' +
@@ -206,7 +207,7 @@
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 
         $("#grams_" + new_ingredient_no).prop("disabled", true);
-        $("#grams_" + new_ingredient_no).val("Vyberte ingredienci");
+        $("#grams_" + new_ingredient_no).val("Množství");
 
         $('#remove_' + new_ingredient_no).click(function () {
             $(this).closest('tr').remove();
@@ -220,6 +221,7 @@
             $('#nutr_carbs_' + new_ingredient_no).val(data.carbs)
             $('#nutr_fibre_' + new_ingredient_no).val(data.fibre)
             $('#nutr_proteins_' + new_ingredient_no).val(data.proteins)
+            $("#ingr_info_" + new_ingredient_no).prop("disabled", false);
             $("#grams_" + new_ingredient_no).prop("disabled", false);
             $("#grams_" + new_ingredient_no).val("");
         });
@@ -229,8 +231,9 @@
             $('#nutr_carbs_' + new_ingredient_no).val(0)
             $('#nutr_fibre_' + new_ingredient_no).val(0)
             $('#nutr_proteins_' + new_ingredient_no).val(0)
+            $("#ingr_info_" + new_ingredient_no).prop("disabled", true);
             $("#grams_" + new_ingredient_no).prop("disabled", true);
-            $("#grams_" + new_ingredient_no).val("Vyberte ingredienci");
+            $("#grams_" + new_ingredient_no).val("Množství");
             calculateNutrients()
         });
 
