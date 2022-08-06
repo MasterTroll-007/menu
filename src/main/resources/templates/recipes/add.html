@@ -143,7 +143,7 @@
     function calculateNutrients() {
         var proteins = 0, fats = 0, carbs = 0, fibre = 0, kJ = 0
         var ingrCount = $('#new_ingredient').children().length;
-        for (i = 3; i <= ingrCount; i++) {
+        for (i = 3; i < ingrCount; i++) {
             var wholeId = $('#new_ingredient').children()[i].id
             var id = wholeId.slice(wholeId.lastIndexOf('_') + 1, wholeId.length);
             var grams = $("#grams_" + id).val();
@@ -155,21 +155,16 @@
                 proteins = Math.round(proteins + parseInt($("#nutr_proteins_" + id).val()) * gramCoef)
                 kJ = Math.round((carbs * 17 + proteins * 17) + (fats * 38))
 
+                var content = "<table><tr><td>Sacharidy</td><td>"+carbs+"</td></tr><tr><td>Proteiny</td><td>"+proteins+"</td></tr><tr><td>Tuky</td><td>"+fats+"</td></tr><tr><td>Vláknina</td><td>"+fibre+"</td></tr><tr><td>kJ</td><td>"+kJ+"</td></tr></table>";
 
-                document.getElementById('ingr_info_' + id).setAttribute('data-bs-title',
-                    "<table>" +
-                        "<tr>" +
-                            "<td>Sacharidy</td><td>'+carbs+'</td>" +
-                        "</tr><tr>" +
-                            "<td>Proteiny</td><td>'+proteins+'</td>" +
-                        "</tr><tr><" +
-                            "td>Tuky</td><td>'+fats+'</td>" +
-                        "</tr><tr>" +
-                            "<td>Vláknina</td><td>'+fibre+'</td>" +
-                        "</tr><tr>" +
-                            "<td>kJ</td><td>'+kJ+'</td>" +
-                        "</tr>" +
-                    "</table>")
+                new bootstrap.Tooltip('#ingr_info_' + id, {
+                    sanitize: false
+                })
+                // Returns a Bootstrap tooltip instance
+                const tooltip = bootstrap.Tooltip.getInstance('#ingr_info_' + id)
+                // setContent example
+                tooltip.setContent({'.tooltip-inner': content})
+
             }
 
             $('#carbsTotal').val(carbs);
@@ -178,9 +173,6 @@
             $('#fibreTotal').val(fibre);
             $('#kJTotal').val(kJ);
         }
-        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-
     }
 
     function addIngredient() {
@@ -193,7 +185,7 @@
         var new_input = '<tr id="ingredient_id_' + new_ingredient_no + '"> <td class="text-center align-middle col-6"> ' +
             '<select multiple="multiple" id="recipeSelect_' + new_ingredient_no + '" th:field="${recipe.ingredients}" class="form-control input-lg select2-calc"> </select> ' +
             '</td> <td class="text-center align-middle col-3"> <input onchange="calculateNutrients()" id="grams_' + new_ingredient_no + '" type="text" class="recipe-input form-control"> ' +
-            '</td> <td class="text-center align-middle col-3"> <button type="button" class="btn ingr-button btn-secondary ingredient-tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-html="true" id="ingr_info_' + new_ingredient_no + '">i</button>' +
+            '</td> <td class="text-center align-middle col-3"> <button type="button" class="btn ingr-button btn-secondary ingredient-tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-html="true" id="ingr_info_' + new_ingredient_no + '" data-bs-title=" ">i</button>' +
             '</td> <td class="text-center align-middle col-3"> <a type="button" id="remove_' + new_ingredient_no + '" class="btn btn-danger">X</a>' +
             '<input hidden id="nutr_fats_' + new_ingredient_no + '" type="text">' +
             '<input hidden id="nutr_carbs_' + new_ingredient_no + '" type="text">' +
@@ -202,6 +194,9 @@
             '</td></tr>';
         $('#new_ingredient').append(new_input);
         $('#total_ingredients').val(total_ingredients)
+
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 
         $("#grams_" + new_ingredient_no).prop("disabled", true);
         $("#grams_" + new_ingredient_no).val("Vyberte ingredienci");
