@@ -102,7 +102,8 @@
 
 
             <div class="container col-4 opacity-75">
-                <textarea th:field="${recipe.description}" class="form-control" id="recipeDescription" placeholder="Popis receptu" rows="20"
+                <textarea th:field="${recipe.description}" class="form-control" id="recipeDescription"
+                          placeholder="Popis receptu" rows="20"
                           name="notes"></textarea>
                 <div class="row mx-auto col-5">
                     <button type="submit" class="mt-5 btn btn-success btn-lg">Uložit</button>
@@ -112,21 +113,6 @@
     </form>
 </div>
 <script>
-
-/*    $("#recipeForm").submit(function (event) {
-
-        // Stop form from submitting normally
-        event.preventDefault();
-
-        var data
-        $.ajax({
-            type: "POST",
-            url: "/recipes/new",
-            data: data,
-            success: "",
-            dataType: ""
-        });
-    })*/
 
     $('.recipeSelect').select2({
         //maximumSelectionLength: 1,
@@ -152,68 +138,87 @@
         }
     });
 
-    //TODO overall Kj for each ingredient
-    //TODO tooltip with nutrients
-    //TODO posting list of ingredients with description to controller
-    function calculateNutrients() {
-        var proteinsTotal = 0, fatsTotal = 0, carbsTotal = 0, fibreTotal = 0, kJTotal = 0
-        var proteins = 0, fats = 0, carbs = 0, fibre = 0, kJ = 0
-        var ingrCount = $('#new_ingredient').children().length;
+    function hideNutrientTooltip(wholeId) {
+        //recipeIngredients'+new_ingredient_no+'.grams
+        var id = wholeId.replace(/^\D+/g, '')
+        id = id.slice(0, id.lastIndexOf('.'));
+        const tooltipElm = bootstrap.Tooltip.getInstance('#ingr_info_' + id)
+
+        tooltipElm.hide()
+    }
+
+    function calculateOverallNutrients() {
+        let proteinsTotal = 0, fatsTotal = 0, carbsTotal = 0, fibreTotal = 0, kJTotal = 0
+        let proteins = 0, fats = 0, carbs = 0, fibre = 0, kJ = 0
+        let ingrCount = $('#new_ingredient').children().length;
         for (i = 3; i < ingrCount; i++) {
-            var wholeId = $('#new_ingredient').children()[i].id
-            var id = wholeId.slice(wholeId.lastIndexOf('_') + 1, wholeId.length);
-            var grams = $("#recipeIngredients"+id+"\\.grams").val();
-            //var grams = $("#grams_" + id).val();
-            if (grams !== "Množství") {
-                var gramCoef = grams / 100
-                fats = Math.round(parseInt($("#nutr_fats_" + id).val()) * gramCoef)
-                carbs = Math.round(parseInt($("#nutr_carbs_" + id).val()) * gramCoef)
-                fibre = Math.round(parseInt($("#nutr_fibre_" + id).val()) * gramCoef)
-                proteins = Math.round(parseInt($("#nutr_proteins_" + id).val()) * gramCoef)
-                kJ = Math.round((carbs * 17 + proteins * 17) + (fats * 38))
+            let wholeId = $('#new_ingredient').children()[i].id
+            let id = wholeId.slice(wholeId.lastIndexOf('_') + 1, wholeId.length);
+            let grams = $("#recipeIngredients" + id + "\\.grams").val();
+            if (grams !== "") {
+                let gramCoef = grams / 100
+                fats = parseInt($("#nutr_fats_" + id).val()) * gramCoef
+                carbs = parseInt($("#nutr_carbs_" + id).val()) * gramCoef
+                fibre = parseInt($("#nutr_fibre_" + id).val()) * gramCoef
+                proteins = parseInt($("#nutr_proteins_" + id).val()) * gramCoef
+                kJ = (carbs * 17 + proteins * 17) + (fats * 38)
 
-                fatsTotal = Math.round(fatsTotal + fats)
-                carbsTotal = Math.round(carbsTotal + carbs)
-                fibreTotal = Math.round(fibreTotal + fibre)
-                proteinsTotal = Math.round(proteinsTotal + proteins)
-                kJTotal = Math.round((carbsTotal * 17 + proteinsTotal * 17) + (fatsTotal * 38))
-
-                var content = "<table class='tooltip-table'><tr><td>Sacharidy</td><td>" + carbs + "g</td></tr><tr><td>Proteiny</td><td>" + proteins + "g</td></tr><tr><td>Tuky</td><td>" + fats + "g</td></tr><tr><td>Vláknina</td><td>" + fibre + "g</td></tr><tr><td>kJ</td><td>" + kJ + "kJ</td></tr></table>";
-
-                new bootstrap.Tooltip('#ingr_info_' + id, {
-                    sanitize: false,
-                    container: 'body'
-                })
-                // Returns a Bootstrap tooltip instance
-                const tooltipElm = bootstrap.Tooltip.getInstance('#ingr_info_' + id)
-                // setContent example
-                tooltipElm.setContent({'.tooltip-inner': content})
-
+                fatsTotal = fatsTotal + fats
+                carbsTotal = carbsTotal + carbs
+                fibreTotal = fibreTotal + fibre
+                proteinsTotal = proteinsTotal + proteins
+                kJTotal = (carbsTotal * 17 + proteinsTotal * 17) + (fatsTotal * 38)
             }
 
-            $('#carbsTotal').val(carbsTotal);
-            $('#proteinsTotal').val(proteinsTotal);
-            $('#fatsTotal').val(fatsTotal);
-            $('#fibreTotal').val(fibreTotal);
-            $('#kJTotal').val(kJTotal);
+            $('#carbsTotal').val(Math.round(carbsTotal * 10) / 10);
+            $('#proteinsTotal').val(Math.round(proteinsTotal * 10) / 10);
+            $('#fatsTotal').val(Math.round(fatsTotal * 10) / 10);
+            $('#fibreTotal').val(Math.round(fibreTotal * 10) / 10);
+            $('#kJTotal').val(Math.round(kJTotal));
         }
+    }
+
+    function calculateNutrients(tooltipId) {
+        let disposableTooltip = tooltipId.replace(/^\D+/g, '')
+        let id = disposableTooltip.slice(0, disposableTooltip.lastIndexOf('.'));
+        bootstrap.Tooltip.getInstance('#ingr_info_' + id).dispose()
+        let grams = $("#recipeIngredients" + id + "\\.grams").val();
+        let gramCoef = grams / 100
+
+        let proteins, fats, carbs, fibre, kJ
+        fats = Math.round(parseInt($("#nutr_fats_" + id).val()) * gramCoef * 10) / 10
+        carbs = Math.round(parseInt($("#nutr_carbs_" + id).val()) * gramCoef * 10) / 10
+        fibre = Math.round(parseInt($("#nutr_fibre_" + id).val()) * gramCoef * 10) / 10
+        proteins = Math.round(parseInt($("#nutr_proteins_" + id).val()) * gramCoef * 10) / 10
+        kJ = Math.round((carbs * 17 + proteins * 17) + (fats * 38))
+
+        new bootstrap.Tooltip('#ingr_info_' + id, {
+            sanitize: false,
+            container: 'body'
+        })
+
+        let content = "<table class='tooltip-table'><tr><td>Sacharidy</td><td>" + carbs + "g</td></tr><tr><td>Proteiny</td><td>" + proteins + "g</td></tr><tr><td>Tuky</td><td>" + fats + "g</td></tr><tr><td>Vláknina</td><td>" + fibre + "g</td></tr><tr><td>kJ</td><td>" + kJ + "kJ</td></tr></table>";
+        let tooltipElm = bootstrap.Tooltip.getInstance('#ingr_info_' + id)
+        tooltipElm.setContent({'.tooltip-inner': content})
+        tooltipElm.show()
+
+        calculateOverallNutrients()
     }
 
     function addIngredient() {
         var total_ingredients = parseInt($('#total_ingredients').val()) + 1;
         var new_ingredient_no = 0;
-        while ($("#recipeIngredients"+new_ingredient_no+"\\.ingredientId").val() != null) {
+        while ($("#recipeIngredients" + new_ingredient_no + "\\.ingredientId").val() != null) {
             new_ingredient_no += 1;
         }
 
-        var gramsSelector = "#recipeIngredients"+new_ingredient_no+"\\.grams";
-        var select2Selector = "#recipeIngredients"+new_ingredient_no+"\\.ingredientId";
-
+        var gramsSelector = "#recipeIngredients" + new_ingredient_no + "\\.grams";
+        var select2Selector = "#recipeIngredients" + new_ingredient_no + "\\.ingredientId";
 
 
         var new_input = '<tr id="ingredient_id_' + new_ingredient_no + '"> <td class="text-center align-middle col-6"> ' +
-            '<select multiple="multiple" id="recipeIngredients'+new_ingredient_no+'.ingredientId" name="recipeIngredients['+new_ingredient_no+'].ingredientId" class="form-control input-lg select2-calc"> </select> ' +
-            '</td> <td class="text-center align-middle col-3"> <input onchange="calculateNutrients()" id="recipeIngredients'+new_ingredient_no+'.grams" name="recipeIngredients['+new_ingredient_no+'].grams" type="text" class="recipe-input form-control"> ' +
+            '<select multiple="multiple" id="recipeIngredients' + new_ingredient_no + '.ingredientId" name="recipeIngredients[' + new_ingredient_no + '].ingredientId" class="form-control input-lg select2-calc"> </select> ' +
+            '</td> <td class="text-center align-middle col-3"> <input onchange="hideNutrientTooltip(this.id)" oninput="calculateNutrients(this.id)" id="recipeIngredients' + new_ingredient_no + '.grams" name="recipeIngredients[' + new_ingredient_no + '].grams" type="number" class="recipe-input form-control"> ' +
             '</td> <td class="text-center align-middle col-3"> <button disabled type="button" class="btn ingr-button btn-secondary ingredient-tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-html="true" id="ingr_info_' + new_ingredient_no + '" data-bs-title=" ">i</button>' +
             '</td> <td class="text-center align-middle col-3"> <a type="button" id="remove_' + new_ingredient_no + '" class="btn btn-danger">X</a>' +
             '<input hidden id="nutr_fats_' + new_ingredient_no + '" type="text">' +
