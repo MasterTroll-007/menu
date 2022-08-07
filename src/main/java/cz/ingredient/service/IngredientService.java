@@ -59,6 +59,12 @@ public class IngredientService implements IIngredientService {
                 .orElseThrow(() -> new IngredientException("Ingredience nenalezena."));
     }
 
+    @Override
+    public Ingredient getById(Long id) throws IngredientException {
+        return ingredientRepository.findById(id)
+                .orElseThrow(() -> new IngredientException("Ingredience nenalezena."));
+    }
+
     private Ingredient ingredientEntityMapper(IngredientDto dto) {
         ModelMapper modelMapper = new ModelMapper();
         Ingredient ingredient = modelMapper.map(dto, Ingredient.class);

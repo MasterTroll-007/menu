@@ -17,10 +17,10 @@ import java.util.stream.IntStream;
 @RequestMapping("/recipes")
 public class RecipeControl {
 
-    private static final String RECIPE_DETAIL = "recipes/detail";
+    private static final String RECIPE_EDIT = "recipes/edit";
     private static final String NEW_RECIPE = "recipes/add";
     private static final String RECIPE_LIST = "recipes/list";
-    private static final String REDIRECT_DETAIL = "redirect:/recipes/detail/";
+    private static final String REDIRECT_EDIT = "redirect:/recipes/edit/";
 
     private final IRecipeService recipeService;
 
@@ -60,23 +60,23 @@ public class RecipeControl {
     @PostMapping("/new")
     public String addRecipe(@ModelAttribute(name = "recipe") RecipeDto recipeDto) {
         Long recipeId = recipeService.addRecipe(recipeDto).getId();
-        return REDIRECT_DETAIL + recipeId;
+        return REDIRECT_EDIT + recipeId;
     }
 
-    @PostMapping("/detail/{id}")
+    @PostMapping("/edit/{id}")
     public String updateRecipe(@PathVariable Long id, Model model) throws RecipeException {
         recipeService.updateRecipeForm(model, id);
-        return REDIRECT_DETAIL + id;
+        return REDIRECT_EDIT + id;
     }
 
-    @GetMapping("/detail/{id}")
+    @GetMapping("/edit/{id}")
     public String updateRecipeForm(Model model, @PathVariable Long id) throws RecipeException {
         RecipeDto recipeDto = recipeService.findById(id);
 
         model.addAttribute("recipe", recipeDto);
         model.addAttribute("model", model);
 
-        return RECIPE_DETAIL;
+        return RECIPE_EDIT;
     }
 
     @GetMapping("/delete")

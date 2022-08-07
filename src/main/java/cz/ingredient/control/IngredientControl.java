@@ -71,6 +71,12 @@ public class IngredientControl {
         return ingredientService.getIngredients(term);
     }
 
+    @ResponseBody
+    @GetMapping(path = "/find/{id}")
+    public Ingredient findById(@PathVariable Long id) throws IngredientException {
+        return ingredientService.getById(id);
+    }
+
     @PostMapping("/new")
     public String addIngredient(@ModelAttribute(name = "ingredient") IngredientDto ingredientDto) {
         ingredientService.addIngredient(ingredientDto);

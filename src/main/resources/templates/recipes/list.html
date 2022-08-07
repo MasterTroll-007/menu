@@ -45,7 +45,7 @@
             <tbody>
             <tr th:each="recipe, iStat : ${recipePage.content}">
                 <td class="text-center align-middle" th:text="${recipe.name}"></td>
-                <td class="text-center align-middle" th:text="${recipe.ingredients.size}"></td>
+                <td class="text-center align-middle" th:text="${recipe.recipeIngredients.size}"></td>
 <!--
                 <td class="text-center align-middle" th:text="${kJ}"></td>
 -->

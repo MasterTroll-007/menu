@@ -14,11 +14,11 @@ public class IngredientDto implements Serializable {
 
     private Long id;
     private String name;
-    private int proteins;
-    private int carbohydrates;
-    private int fats;
-    private int fibre;
-    private int kJ;
+    private float proteins;
+    private float carbohydrates;
+    private float fats;
+    private float fibre;
+    private float kJ;
 
     public IngredientDto(Ingredient ingredient) {
         this.id = ingredient.getId();

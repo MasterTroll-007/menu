@@ -15,4 +15,5 @@ public interface IIngredientService {
     void deleteIngredient(Long ingredientId);
     Page<IngredientDto> findPaginated(int currentPage, int pageSize, String sortField, String sortDir);
     List<Ingredient> getIngredients(String term) throws IngredientException;
+    Ingredient getById(Long id) throws IngredientException;
 }

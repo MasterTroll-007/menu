@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Přidat recept</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.2/assets/css/docs.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css"
+          rel="stylesheet">
+    <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+</head>
+<body>
+<div id="recipes-bg"></div>
+<div th:insert="navbar :: navbar"></div>
+
+<div class="container-fluid">
+    <form id="recipeForm" method="post" th:object="${recipe}">
+        <div class="row mt-5">
+            <div class="container col-4">
+
+                <table class="table table-dark opacity-75" style="margin-bottom: 0;">
+                    <tbody>
+                    <tr>
+                        <th class="align-middle col-3">Recept
+                        <td class="text-center align-middle col-6">
+                            <input th:field="${recipe.name}" id="recipeName" type="text" class="form-control"
+                                   placeholder="název receptu">
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="container col-4">
+                <table class="table table-dark opacity-75" id="ingredientsTable" style="margin-bottom: 0;">
+                    <tbody id="new_ingredient">
+                    <input type="hidden" value="0" id="total_ingredients">
+                    <input type="hidden" value="0" id="new_ingredient_id">
+                    <tr>
+                        <th class="text-center align-middle col-3">Ingredience</th>
+                        <th class="text-center align-middle text-center col-6">Gramáž</th>
+                    </tr>
+
+                    <tr th:id="'ingredient_id_'+${__${ingredientStat.index}__}"
+                        th:each="ingredient : ${recipe.recipeIngredients}">
+                        <td th:id="'ingredient_id_'+${__${ingredientStat.index}__} + '_td'"
+                            class="text-center align-middle col-6">
+                            <input multiple="multiple"
+                                    th:value="'recipeIngredient_' + *{recipeIngredients[__${ingredientStat.index}__].ingredientId}"
+                                    th:id="'recipeIngredientId_' + ${__${ingredientStat.index}__}"
+                                    class="form-control input-lg select2-calc"/>
+                        </td>
+                        <td class="text-center align-middle col-3">
+                            <input onchange="hideNutrientTooltip(this.id)"
+                                   oninput="calculateNutrients(this.id)"
+                                   th:field="*{recipeIngredients[__${ingredientStat.index}__].grams}"
+                                   type="number"
+                                   class="recipe-input form-control"></td>
+                        <td class="text-center align-middle col-3">
+                            <button th:id="'ingr_info_'+${__${ingredientStat.index}__}" disabled type="button"
+                                    class="btn ingr-button btn-secondary ingredient-tooltip"
+                                    data-bs-placement="right" data-bs-custom-class="custom-tooltip"
+                                    data-bs-toggle="tooltip" data-bs-html="true" data-bs-title=" ">i
+                            </button>
+                        </td>
+                        <td class="text-center align-middle col-3">
+                            <input hidden th:id="'nutr_fats_'+${__${ingredientStat.index}__}" type="text">
+                            <input hidden th:id="'nutr_carbs_'+${__${ingredientStat.index}__}" type="text">
+                            <input hidden th:id="'nutr_fibre_'+${__${ingredientStat.index}__}" type="text">
+                            <input hidden th:id="'nutr_proteins_'+${__${ingredientStat.index}__}" type="text">
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="container col-2 ">
+                <table class="table table-dark opacity-75" style="margin-bottom: 0;">
+                    <tbody>
+                    <tr>
+                        <th class="align-middle"></th>
+                        <th class="align-middle text-center">Celkem</th>
+                    </tr>
+                    <tr>
+                        <th class="align-middle">Sacharidy</th>
+                        <td class="text-center align-middle">
+                            <input class="recipe-disabled-input" type="text" disabled value="0" id="carbsTotal">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="align-middle">Bílkoviny</th>
+                        <td class="text-center align-middle">
+                            <input class="recipe-disabled-input" type="text" disabled value="0" id="proteinsTotal">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="align-middle">Tuky</th>
+                        <td class="text-center align-middle">
+                            <input class="recipe-disabled-input" type="text" disabled value="0" id="fatsTotal">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="align-middle">Vláknina</th>
+                        <td class="text-center align-middle">
+                            <input class="recipe-disabled-input" type="text" disabled value="0" id="fibreTotal">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="align-middle">kJ</th>
+                        <td class="text-center align-middle">
+                            <input class="recipe-disabled-input" type="text" disabled value="0" id="kJTotal">
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+
+            <div class="container col-4 opacity-75">
+                <textarea th:field="${recipe.description}" class="form-control" id="recipeDescription"
+                          placeholder="Popis receptu" rows="20"
+                          name="notes"></textarea>
+                <div class="row mx-auto col-5">
+                    <button type="submit" class="mt-5 btn btn-success btn-lg">Uložit</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+
+    $(document).ready(function () {
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {
+            sanitize: false,
+            container: 'body'
+        }))
+
+        let ingrCount = $('#new_ingredient').children().length;
+        for (i = 3; i < ingrCount; i++) {
+            let wholeId = $('#new_ingredient').children()[i].id
+            let tdId = wholeId.slice(wholeId.lastIndexOf('_') + 1, wholeId.length);
+            $("#ingr_info_" + tdId).prop("disabled", false);
+
+            let gramsInputId = "recipeIngredients" + tdId + "\\.grams"
+            let gramsAmount = $("#"+gramsInputId).val()
+            let gramsCoef = gramsAmount / 100
+            let inputWholeId = $("#ingredient_id_" + tdId + "_td").children()[0].id
+            let recipeIngredientVal = $("#"+inputWholeId).val()
+            let ingredientId = recipeIngredientVal.slice(recipeIngredientVal.lastIndexOf('_') + 1, recipeIngredientVal.length);
+
+            $.ajax({
+                url: "/ingredients/find/" + ingredientId,
+                success: function (result) {
+                    let carbs = result.carbohydrates * gramsCoef
+                    let fats = result.fats * gramsCoef
+                    let proteins = result.proteins * gramsCoef
+                    let fibre = result.fibre * gramsCoef
+                    let kJ = (carbs * 17 + proteins * 17) + (fats * 38)
+                    $('#' + inputWholeId).val(result.name)
+
+                    let content = "<table class='tooltip-table'><tr><td>Sacharidy</td><td>" + carbs + "g</td></tr><tr><td>Proteiny</td><td>" + proteins + "g</td></tr><tr><td>Tuky</td><td>" + fats + "g</td></tr><tr><td>Vláknina</td><td>" + fibre + "g</td></tr><tr><td>kJ</td><td>" + kJ + "kJ</td></tr></table>";
+                    let tooltipElm = bootstrap.Tooltip.getInstance('#ingr_info_' + tdId)
+                    tooltipElm.setContent({'.tooltip-inner': content})
+
+                    $('#nutr_fats_' + tdId).val(fats)
+                    $('#nutr_carbs_' + tdId).val(carbs)
+                    $('#nutr_fibre_' + tdId).val(fibre)
+                    $('#nutr_proteins_' + tdId).val(proteins)
+                    if(ingrCount === i) {
+                        calculateOverallNutrients()
+                    }
+                }
+            });
+        }
+    })
+
+    function hideNutrientTooltip(wholeId) {
+        //recipeIngredients'+new_ingredient_no+'.grams
+        var id = wholeId.replace(/^\D+/g, '')
+        id = id.slice(0, id.lastIndexOf('.'));
+        const tooltipElm = bootstrap.Tooltip.getInstance('#ingr_info_' + id)
+
+        tooltipElm.hide()
+    }
+
+    function calculateOverallNutrients() {
+        let proteinsTotal = 0, fatsTotal = 0, carbsTotal = 0, fibreTotal = 0, kJTotal = 0
+        let proteins = 0, fats = 0, carbs = 0, fibre = 0, kJ = 0
+        let ingrCount = $('#new_ingredient').children().length;
+        for (i = 3; i < ingrCount; i++) {
+            let wholeId = $('#new_ingredient').children()[i].id
+            let id = wholeId.slice(wholeId.lastIndexOf('_') + 1, wholeId.length);
+            let grams = $("#recipeIngredients" + id + "\\.grams").val();
+            if (grams !== "") {
+                let gramCoef = grams / 100
+                fats = parseInt($("#nutr_fats_" + id).val())
+                carbs = parseInt($("#nutr_carbs_" + id).val())
+                fibre = parseInt($("#nutr_fibre_" + id).val())
+                proteins = parseInt($("#nutr_proteins_" + id).val())
+                kJ = (carbs * 17 + proteins * 17) + (fats * 38)
+
+                fatsTotal = fatsTotal + fats
+                carbsTotal = carbsTotal + carbs
+                fibreTotal = fibreTotal + fibre
+                proteinsTotal = proteinsTotal + proteins
+                kJTotal = (carbsTotal * 17 + proteinsTotal * 17) + (fatsTotal * 38)
+            }
+
+            $('#carbsTotal').val(Math.round(carbsTotal * 10) / 10);
+            $('#proteinsTotal').val(Math.round(proteinsTotal * 10) / 10);
+            $('#fatsTotal').val(Math.round(fatsTotal * 10) / 10);
+            $('#fibreTotal').val(Math.round(fibreTotal * 10) / 10);
+            $('#kJTotal').val(Math.round(kJTotal));
+        }
+    }
+
+    function calculateNutrients(tooltipId) {
+        let disposableTooltip = tooltipId.replace(/^\D+/g, '')
+        let id = disposableTooltip.slice(0, disposableTooltip.lastIndexOf('.'));
+        bootstrap.Tooltip.getInstance('#ingr_info_' + id).dispose()
+        let grams = $("#recipeIngredients" + id + "\\.grams").val();
+        let gramCoef = grams / 100
+
+        let proteins, fats, carbs, fibre, kJ
+        fats = Math.round(parseInt($("#nutr_fats_" + id).val()) * gramCoef * 10) / 10
+        carbs = Math.round(parseInt($("#nutr_carbs_" + id).val()) * gramCoef * 10) / 10
+        fibre = Math.round(parseInt($("#nutr_fibre_" + id).val()) * gramCoef * 10) / 10
+        proteins = Math.round(parseInt($("#nutr_proteins_" + id).val()) * gramCoef * 10) / 10
+        kJ = Math.round((carbs * 17 + proteins * 17) + (fats * 38))
+
+        new bootstrap.Tooltip('#ingr_info_' + id, {
+            sanitize: false,
+            container: 'body'
+        })
+
+
+        calculateOverallNutrients()
+    }
+
+</script>
+
+</body>
+</html>
