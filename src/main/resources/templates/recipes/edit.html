@@ -230,23 +230,24 @@
                     var newOption = new Option(result.name, result.id, true, true);
                     // Append it to the select
                     let select2Selector = '#recipeIngredients' + tdId + '\\.ingredientId';
+                    var gramsSelector = "#recipeIngredients" + tdId + "\\.grams";
                     $(select2Selector).on('select2:select', function (e) {
                         var data = e.params.data;
-                        $('#nutr_fats_' + new_ingredient_no).val(data.fats)
-                        $('#nutr_carbs_' + new_ingredient_no).val(data.carbs)
-                        $('#nutr_fibre_' + new_ingredient_no).val(data.fibre)
-                        $('#nutr_proteins_' + new_ingredient_no).val(data.proteins)
-                        $("#ingr_info_" + new_ingredient_no).prop("disabled", false);
+                        $('#nutr_fats_' + tdId).val(data.fats)
+                        $('#nutr_carbs_' + tdId).val(data.carbs)
+                        $('#nutr_fibre_' + tdId).val(data.fibre)
+                        $('#nutr_proteins_' + tdId).val(data.proteins)
+                        $("#ingr_info_" + tdId).prop("disabled", false);
                         $(gramsSelector).prop("disabled", false);
                         $(gramsSelector).val("");
                     });
 
                     $(select2Selector).on('select2:unselect', function (e) {
-                        $('#nutr_fats_' + new_ingredient_no).val(0)
-                        $('#nutr_carbs_' + new_ingredient_no).val(0)
-                        $('#nutr_fibre_' + new_ingredient_no).val(0)
-                        $('#nutr_proteins_' + new_ingredient_no).val(0)
-                        $("#ingr_info_" + new_ingredient_no).prop("disabled", true);
+                        $('#nutr_fats_' + tdId).val(0)
+                        $('#nutr_carbs_' + tdId).val(0)
+                        $('#nutr_fibre_' + tdId).val(0)
+                        $('#nutr_proteins_' + tdId).val(0)
+                        $("#ingr_info_" + tdId).prop("disabled", true);
                         $(gramsSelector).prop("disabled", true);
                         calculateNutrients("recipeIngredients"+tdId+".grams")
                     });
@@ -381,6 +382,7 @@
             $('#nutr_proteins_' + new_ingredient_no).val(0)
             $("#ingr_info_" + new_ingredient_no).prop("disabled", true);
             $(gramsSelector).prop("disabled", true);
+            $(gramsSelector).val("");
             calculateNutrients("recipeIngredients"+new_ingredient_no+".grams")
             bootstrap.Tooltip.getInstance('#ingr_info_' + new_ingredient_no).hide()
         });
