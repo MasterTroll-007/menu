@@ -55,17 +55,15 @@
                         th:each="ingredient : ${recipe.recipeIngredients}">
                         <td th:id="'ingredient_id_'+${__${ingredientStat.index}__} + '_td'"
                             class="text-center align-middle col-6">
-                            <input multiple="multiple"
-                                    th:value="'recipeIngredient_' + *{recipeIngredients[__${ingredientStat.index}__].ingredientId}"
-                                    th:id="'recipeIngredientId_' + ${__${ingredientStat.index}__}"
-                                    class="form-control input-lg select2-calc"/>
+                            <input disabled multiple="multiple"
+                                   th:value="'recipeIngredient_' + *{recipeIngredients[__${ingredientStat.index}__].ingredientId}"
+                                   th:id="'recipeIngredientId_' + ${__${ingredientStat.index}__}"
+                                   class="form-control input-lg select2-calc"/>
                         </td>
                         <td class="text-center align-middle col-3">
-                            <input onchange="hideNutrientTooltip(this.id)"
-                                   oninput="calculateNutrients(this.id)"
-                                   th:field="*{recipeIngredients[__${ingredientStat.index}__].grams}"
-                                   type="number"
-                                   class="recipe-input form-control"></td>
+                            <input disabled  th:field="*{recipeIngredients[__${ingredientStat.index}__].grams}"
+                                   type="number" class="recipe-input form-control">
+                        </td>
                         <td class="text-center align-middle col-3">
                             <button th:id="'ingr_info_'+${__${ingredientStat.index}__}" disabled type="button"
                                     class="btn ingr-button btn-secondary ingredient-tooltip"
@@ -155,20 +153,20 @@
             $("#ingr_info_" + tdId).prop("disabled", false);
 
             let gramsInputId = "recipeIngredients" + tdId + "\\.grams"
-            let gramsAmount = $("#"+gramsInputId).val()
+            let gramsAmount = $("#" + gramsInputId).val()
             let gramsCoef = gramsAmount / 100
             let inputWholeId = $("#ingredient_id_" + tdId + "_td").children()[0].id
-            let recipeIngredientVal = $("#"+inputWholeId).val()
+            let recipeIngredientVal = $("#" + inputWholeId).val()
             let ingredientId = recipeIngredientVal.slice(recipeIngredientVal.lastIndexOf('_') + 1, recipeIngredientVal.length);
 
             $.ajax({
                 url: "/ingredients/find/" + ingredientId,
                 success: function (result) {
-                    let carbs = result.carbohydrates * gramsCoef
-                    let fats = result.fats * gramsCoef
-                    let proteins = result.proteins * gramsCoef
-                    let fibre = result.fibre * gramsCoef
-                    let kJ = (carbs * 17 + proteins * 17) + (fats * 38)
+                    let carbs = Math.round(result.carbohydrates * gramsCoef * 10) / 10
+                    let fats = Math.round(result.fats * gramsCoef * 10) / 10
+                    let proteins = Math.round(result.proteins * gramsCoef * 10) / 10
+                    let fibre = Math.round(result.fibre * gramsCoef * 10) / 10
+                    let kJ = Math.round((carbs * 17 + proteins * 17) + (fats * 38) * 10) / 10
                     $('#' + inputWholeId).val(result.name)
 
                     let content = "<table class='tooltip-table'><tr><td>Sacharidy</td><td>" + carbs + "g</td></tr><tr><td>Proteiny</td><td>" + proteins + "g</td></tr><tr><td>Tuky</td><td>" + fats + "g</td></tr><tr><td>Vláknina</td><td>" + fibre + "g</td></tr><tr><td>kJ</td><td>" + kJ + "kJ</td></tr></table>";
@@ -179,22 +177,13 @@
                     $('#nutr_carbs_' + tdId).val(carbs)
                     $('#nutr_fibre_' + tdId).val(fibre)
                     $('#nutr_proteins_' + tdId).val(proteins)
-                    if(ingrCount === i) {
+                    if (ingrCount === i) {
                         calculateOverallNutrients()
                     }
                 }
             });
         }
     })
-
-    function hideNutrientTooltip(wholeId) {
-        //recipeIngredients'+new_ingredient_no+'.grams
-        var id = wholeId.replace(/^\D+/g, '')
-        id = id.slice(0, id.lastIndexOf('.'));
-        const tooltipElm = bootstrap.Tooltip.getInstance('#ingr_info_' + id)
-
-        tooltipElm.hide()
-    }
 
     function calculateOverallNutrients() {
         let proteinsTotal = 0, fatsTotal = 0, carbsTotal = 0, fibreTotal = 0, kJTotal = 0
@@ -205,11 +194,10 @@
             let id = wholeId.slice(wholeId.lastIndexOf('_') + 1, wholeId.length);
             let grams = $("#recipeIngredients" + id + "\\.grams").val();
             if (grams !== "") {
-                let gramCoef = grams / 100
-                fats = parseInt($("#nutr_fats_" + id).val())
-                carbs = parseInt($("#nutr_carbs_" + id).val())
-                fibre = parseInt($("#nutr_fibre_" + id).val())
-                proteins = parseInt($("#nutr_proteins_" + id).val())
+                fats = parseFloat($("#nutr_fats_" + id).val())
+                carbs = parseFloat($("#nutr_carbs_" + id).val())
+                fibre = parseFloat($("#nutr_fibre_" + id).val())
+                proteins = parseFloat($("#nutr_proteins_" + id).val())
                 kJ = (carbs * 17 + proteins * 17) + (fats * 38)
 
                 fatsTotal = fatsTotal + fats
@@ -225,29 +213,6 @@
             $('#fibreTotal').val(Math.round(fibreTotal * 10) / 10);
             $('#kJTotal').val(Math.round(kJTotal));
         }
-    }
-
-    function calculateNutrients(tooltipId) {
-        let disposableTooltip = tooltipId.replace(/^\D+/g, '')
-        let id = disposableTooltip.slice(0, disposableTooltip.lastIndexOf('.'));
-        bootstrap.Tooltip.getInstance('#ingr_info_' + id).dispose()
-        let grams = $("#recipeIngredients" + id + "\\.grams").val();
-        let gramCoef = grams / 100
-
-        let proteins, fats, carbs, fibre, kJ
-        fats = Math.round(parseInt($("#nutr_fats_" + id).val()) * gramCoef * 10) / 10
-        carbs = Math.round(parseInt($("#nutr_carbs_" + id).val()) * gramCoef * 10) / 10
-        fibre = Math.round(parseInt($("#nutr_fibre_" + id).val()) * gramCoef * 10) / 10
-        proteins = Math.round(parseInt($("#nutr_proteins_" + id).val()) * gramCoef * 10) / 10
-        kJ = Math.round((carbs * 17 + proteins * 17) + (fats * 38))
-
-        new bootstrap.Tooltip('#ingr_info_' + id, {
-            sanitize: false,
-            container: 'body'
-        })
-
-
-        calculateOverallNutrients()
     }
 
 </script>
