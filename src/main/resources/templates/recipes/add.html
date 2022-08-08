@@ -233,12 +233,11 @@
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 
         $(gramsSelector).prop("disabled", true);
-        $(gramsSelector).val("Množství");
 
         $('#remove_' + new_ingredient_no).click(function () {
             $(this).closest('tr').remove();
             $('#total_ingredients').val(parseInt($('#total_ingredients').val()) - 1);
-            calculateNutrients()
+            calculateOverallNutrients()
         });
 
         $(select2Selector).on('select2:select', function (e) {
@@ -259,8 +258,9 @@
             $('#nutr_proteins_' + new_ingredient_no).val(0)
             $("#ingr_info_" + new_ingredient_no).prop("disabled", true);
             $(gramsSelector).prop("disabled", true);
-            $(gramsSelector).val("Množství");
-            calculateNutrients()
+            calculateNutrients("recipeIngredients"+new_ingredient_no+".grams")
+            $(gramsSelector).val("");
+            bootstrap.Tooltip.getInstance('#ingr_info_' + new_ingredient_no).hide()
         });
 
         $(select2Selector).select2({

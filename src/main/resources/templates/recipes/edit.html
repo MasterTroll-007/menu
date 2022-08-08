@@ -49,19 +49,26 @@
                     <tr>
                         <th class="text-center align-middle col-3">Ingredience</th>
                         <th class="text-center align-middle text-center col-6">Gramáž</th>
+                        <th class="text-center align-middle col-3">
+                            <a onclick="addIngredient()" class="text-center align-middle mt-3 btn btn-primary">+</a>
+                        </th>
                     </tr>
 
                     <tr th:id="'ingredient_id_'+${__${ingredientStat.index}__}"
                         th:each="ingredient : ${recipe.recipeIngredients}">
                         <td th:id="'ingredient_id_'+${__${ingredientStat.index}__} + '_td'"
                             class="text-center align-middle col-6">
-                            <input disabled multiple="multiple"
-                                   th:value="'recipeIngredient_' + *{recipeIngredients[__${ingredientStat.index}__].ingredientId}"
-                                   th:id="'recipeIngredientId_' + ${__${ingredientStat.index}__}"
-                                   class="form-control input-lg select2-calc"/>
+                            <select multiple="multiple"
+                                    th:id="'recipeIngredients' + ${__${ingredientStat.index}__} + '.ingredientId'"
+                                    th:name="'recipeIngredients[' + ${__${ingredientStat.index}__} + '].ingredientId'"
+                                    class="form-control input-lg select2-calc"></select>
+                            <input hidden
+                                   th:value="'recipeIngredient_' + *{recipeIngredients[__${ingredientStat.index}__].ingredientId}">
                         </td>
                         <td class="text-center align-middle col-3">
-                            <input disabled  th:field="*{recipeIngredients[__${ingredientStat.index}__].grams}"
+                            <input onchange="hideNutrientTooltip(this.id)" oninput="calculateNutrients(this.id)"
+                                   th:id="'recipeIngredients' + ${__${ingredientStat.index}__} + '.grams'"
+                                   th:value="*{recipeIngredients[__${ingredientStat.index}__].grams}"
                                    type="number" class="recipe-input form-control">
                         </td>
                         <td class="text-center align-middle col-3">
@@ -72,6 +79,8 @@
                             </button>
                         </td>
                         <td class="text-center align-middle col-3">
+                            <a type="button" th:id="'remove_'+${__${ingredientStat.index}__}"
+                               class="btn btn-danger">X</a>
                             <input hidden th:id="'nutr_fats_'+${__${ingredientStat.index}__}" type="text">
                             <input hidden th:id="'nutr_carbs_'+${__${ingredientStat.index}__}" type="text">
                             <input hidden th:id="'nutr_fibre_'+${__${ingredientStat.index}__}" type="text">
@@ -139,6 +148,9 @@
 </div>
 <script>
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////  INITIALIZATION ///////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     $(document).ready(function () {
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {
@@ -146,18 +158,53 @@
             container: 'body'
         }))
 
+
+        $(".select2-calc").select2({
+            maximumSelectionLength: 1,
+            minimumInputLength: 1,
+            ajax: {
+                url: '/ingredients/find',
+                dataType: 'json',
+                type: "GET",
+                data: function (term) {
+                    return term;
+                },
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                id: item.id,
+                                slug: item.name,
+                                text: item.name,
+                                fats: item.fats,
+                                proteins: item.proteins,
+                                fibre: item.fibre,
+                                carbs: item.carbohydrates
+                            }
+                        })
+                    };
+                }
+            }
+        });
+
         let ingrCount = $('#new_ingredient').children().length;
         for (i = 3; i < ingrCount; i++) {
-            let wholeId = $('#new_ingredient').children()[i].id
-            let tdId = wholeId.slice(wholeId.lastIndexOf('_') + 1, wholeId.length);
+            let wholeTdId = $('#new_ingredient').children()[i].id
+            let tdId = wholeTdId.slice(wholeTdId.lastIndexOf('_') + 1, wholeTdId.length);
             $("#ingr_info_" + tdId).prop("disabled", false);
+
 
             let gramsInputId = "recipeIngredients" + tdId + "\\.grams"
             let gramsAmount = $("#" + gramsInputId).val()
             let gramsCoef = gramsAmount / 100
             let inputWholeId = $("#ingredient_id_" + tdId + "_td").children()[0].id
-            let recipeIngredientVal = $("#" + inputWholeId).val()
-            let ingredientId = recipeIngredientVal.slice(recipeIngredientVal.lastIndexOf('_') + 1, recipeIngredientVal.length);
+            let ingredientWholeId = $("#ingredient_id_" + tdId + "_td").children()[2].value
+            let ingredientId = ingredientWholeId.slice(ingredientWholeId.lastIndexOf('_') + 1, ingredientWholeId.length);
+
+            $('#remove_' + tdId).click(function () {
+                $(this).closest('tr').remove();
+                calculateOverallNutrients()
+            });
 
             $.ajax({
                 url: "/ingredients/find/" + ingredientId,
@@ -167,23 +214,61 @@
                     let proteins = Math.round(result.proteins * gramsCoef * 10) / 10
                     let fibre = Math.round(result.fibre * gramsCoef * 10) / 10
                     let kJ = Math.round((carbs * 17 + proteins * 17) + (fats * 38) * 10) / 10
-                    $('#' + inputWholeId).val(result.name)
 
                     let content = "<table class='tooltip-table'><tr><td>Sacharidy</td><td>" + carbs + "g</td></tr><tr><td>Proteiny</td><td>" + proteins + "g</td></tr><tr><td>Tuky</td><td>" + fats + "g</td></tr><tr><td>Vláknina</td><td>" + fibre + "g</td></tr><tr><td>kJ</td><td>" + kJ + "kJ</td></tr></table>";
                     let tooltipElm = bootstrap.Tooltip.getInstance('#ingr_info_' + tdId)
                     tooltipElm.setContent({'.tooltip-inner': content})
 
-                    $('#nutr_fats_' + tdId).val(fats)
-                    $('#nutr_carbs_' + tdId).val(carbs)
-                    $('#nutr_fibre_' + tdId).val(fibre)
-                    $('#nutr_proteins_' + tdId).val(proteins)
+                    $('#nutr_fats_' + tdId).val(result.fats)
+                    $('#nutr_fibre_' + tdId).val(result.fibre)
+                    $('#nutr_proteins_' + tdId).val(result.proteins)
+                    $('#nutr_carbs_' + tdId).val(result.carbohydrates)
+
                     if (ingrCount === i) {
                         calculateOverallNutrients()
                     }
+                    var newOption = new Option(result.name, result.id, true, true);
+                    // Append it to the select
+                    let select2Selector = '#recipeIngredients' + tdId + '\\.ingredientId';
+                    $(select2Selector).on('select2:select', function (e) {
+                        var data = e.params.data;
+                        $('#nutr_fats_' + new_ingredient_no).val(data.fats)
+                        $('#nutr_carbs_' + new_ingredient_no).val(data.carbs)
+                        $('#nutr_fibre_' + new_ingredient_no).val(data.fibre)
+                        $('#nutr_proteins_' + new_ingredient_no).val(data.proteins)
+                        $("#ingr_info_" + new_ingredient_no).prop("disabled", false);
+                        $(gramsSelector).prop("disabled", false);
+                        $(gramsSelector).val("");
+                    });
+
+                    $(select2Selector).on('select2:unselect', function (e) {
+                        $('#nutr_fats_' + new_ingredient_no).val(0)
+                        $('#nutr_carbs_' + new_ingredient_no).val(0)
+                        $('#nutr_fibre_' + new_ingredient_no).val(0)
+                        $('#nutr_proteins_' + new_ingredient_no).val(0)
+                        $("#ingr_info_" + new_ingredient_no).prop("disabled", true);
+                        $(gramsSelector).prop("disabled", true);
+                        calculateNutrients("recipeIngredients"+tdId+".grams")
+                    });
+
+                    $(select2Selector).append(newOption).trigger('change');
                 }
-            });
+            })
         }
     })
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////// AFTER INITIALIZATION ///////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    function hideNutrientTooltip(wholeId) {
+        //recipeIngredients'+new_ingredient_no+'.grams
+        var id = wholeId.replace(/^\D+/g, '')
+        id = id.slice(0, id.lastIndexOf('.'));
+        const tooltipElm = bootstrap.Tooltip.getInstance('#ingr_info_' + id)
+
+        tooltipElm.hide()
+    }
 
     function calculateOverallNutrients() {
         let proteinsTotal = 0, fatsTotal = 0, carbsTotal = 0, fibreTotal = 0, kJTotal = 0
@@ -194,10 +279,11 @@
             let id = wholeId.slice(wholeId.lastIndexOf('_') + 1, wholeId.length);
             let grams = $("#recipeIngredients" + id + "\\.grams").val();
             if (grams !== "") {
-                fats = parseFloat($("#nutr_fats_" + id).val())
-                carbs = parseFloat($("#nutr_carbs_" + id).val())
-                fibre = parseFloat($("#nutr_fibre_" + id).val())
-                proteins = parseFloat($("#nutr_proteins_" + id).val())
+                let gramCoef = grams / 100
+                fats = parseInt($("#nutr_fats_" + id).val()) * gramCoef
+                carbs = parseInt($("#nutr_carbs_" + id).val()) * gramCoef
+                fibre = parseInt($("#nutr_fibre_" + id).val()) * gramCoef
+                proteins = parseInt($("#nutr_proteins_" + id).val()) * gramCoef
                 kJ = (carbs * 17 + proteins * 17) + (fats * 38)
 
                 fatsTotal = fatsTotal + fats
@@ -213,6 +299,119 @@
             $('#fibreTotal').val(Math.round(fibreTotal * 10) / 10);
             $('#kJTotal').val(Math.round(kJTotal));
         }
+    }
+
+    function calculateNutrients(tooltipId) {
+        let disposableTooltip = tooltipId.replace(/^\D+/g, '')
+        let id = disposableTooltip.slice(0, disposableTooltip.lastIndexOf('.'));
+        if (bootstrap.Tooltip.getInstance('#ingr_info_' + id) !== null) {
+            bootstrap.Tooltip.getInstance('#ingr_info_' + id).dispose()
+        }
+
+        let grams = $("#recipeIngredients" + id + "\\.grams").val();
+        let gramCoef = grams / 100
+
+        let proteins, fats, carbs, fibre, kJ
+        fats = Math.round(parseInt($("#nutr_fats_" + id).val()) * gramCoef * 10) / 10
+        carbs = Math.round(parseInt($("#nutr_carbs_" + id).val()) * gramCoef * 10) / 10
+        fibre = Math.round(parseInt($("#nutr_fibre_" + id).val()) * gramCoef * 10) / 10
+        proteins = Math.round(parseInt($("#nutr_proteins_" + id).val()) * gramCoef * 10) / 10
+        kJ = Math.round((carbs * 17 + proteins * 17) + (fats * 38))
+
+        new bootstrap.Tooltip('#ingr_info_' + id, {
+            sanitize: false,
+            container: 'body'
+        })
+
+        let content = "<table class='tooltip-table'><tr><td>Sacharidy</td><td>" + carbs + "g</td></tr><tr><td>Proteiny</td><td>" + proteins + "g</td></tr><tr><td>Tuky</td><td>" + fats + "g</td></tr><tr><td>Vláknina</td><td>" + fibre + "g</td></tr><tr><td>kJ</td><td>" + kJ + "kJ</td></tr></table>";
+        let tooltipElm = bootstrap.Tooltip.getInstance('#ingr_info_' + id)
+        tooltipElm.setContent({'.tooltip-inner': content})
+        tooltipElm.show()
+
+        calculateOverallNutrients()
+    }
+
+    function addIngredient() {
+        var new_ingredient_no = 0;
+        while ($("#recipeIngredients" + new_ingredient_no + "\\.ingredientId").val() != null) {
+            new_ingredient_no += 1;
+        }
+
+        var gramsSelector = "#recipeIngredients" + new_ingredient_no + "\\.grams";
+        var select2Selector = "#recipeIngredients" + new_ingredient_no + "\\.ingredientId";
+
+
+        var new_input = '<tr id="ingredient_id_' + new_ingredient_no + '"> <td class="text-center align-middle col-6"> ' +
+            '<select multiple="multiple" id="recipeIngredients' + new_ingredient_no + '.ingredientId" name="recipeIngredients[' + new_ingredient_no + '].ingredientId" class="form-control input-lg select2-calc"> </select> ' +
+            '</td> <td class="text-center align-middle col-3"> <input onchange="hideNutrientTooltip(this.id)" oninput="calculateNutrients(this.id)" id="recipeIngredients' + new_ingredient_no + '.grams" name="recipeIngredients[' + new_ingredient_no + '].grams" type="number" class="recipe-input form-control"> ' +
+            '</td> <td class="text-center align-middle col-3"> <button disabled type="button" class="btn ingr-button btn-secondary ingredient-tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-html="true" id="ingr_info_' + new_ingredient_no + '" data-bs-title=" ">i</button>' +
+            '</td> <td class="text-center align-middle col-3"> <a type="button" id="remove_' + new_ingredient_no + '" class="btn btn-danger">X</a>' +
+            '<input hidden id="nutr_fats_' + new_ingredient_no + '" type="text">' +
+            '<input hidden id="nutr_carbs_' + new_ingredient_no + '" type="text">' +
+            '<input hidden id="nutr_fibre_' + new_ingredient_no + '" type="text">' +
+            '<input hidden id="nutr_proteins_' + new_ingredient_no + '" type="text">' +
+            '</td></tr>';
+        $('#new_ingredient').append(new_input);
+
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+        $(gramsSelector).prop("disabled", true);
+
+        $('#remove_' + new_ingredient_no).click(function () {
+            $(this).closest('tr').remove();
+            calculateOverallNutrients()
+        });
+
+        $(select2Selector).on('select2:select', function (e) {
+            var data = e.params.data;
+            $('#nutr_fats_' + new_ingredient_no).val(data.fats)
+            $('#nutr_carbs_' + new_ingredient_no).val(data.carbs)
+            $('#nutr_fibre_' + new_ingredient_no).val(data.fibre)
+            $('#nutr_proteins_' + new_ingredient_no).val(data.proteins)
+            $("#ingr_info_" + new_ingredient_no).prop("disabled", false);
+            $(gramsSelector).prop("disabled", false);
+            $(gramsSelector).val("");
+        });
+
+        $(select2Selector).on('select2:unselect', function (e) {
+            $('#nutr_fats_' + new_ingredient_no).val(0)
+            $('#nutr_carbs_' + new_ingredient_no).val(0)
+            $('#nutr_fibre_' + new_ingredient_no).val(0)
+            $('#nutr_proteins_' + new_ingredient_no).val(0)
+            $("#ingr_info_" + new_ingredient_no).prop("disabled", true);
+            $(gramsSelector).prop("disabled", true);
+            calculateNutrients("recipeIngredients"+new_ingredient_no+".grams")
+            bootstrap.Tooltip.getInstance('#ingr_info_' + new_ingredient_no).hide()
+        });
+
+        $(select2Selector).select2({
+            maximumSelectionLength: 1,
+            minimumInputLength: 1,
+            ajax: {
+                url: '/ingredients/find',
+                dataType: 'json',
+                type: "GET",
+                data: function (term) {
+                    return term;
+                },
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                id: item.id,
+                                slug: item.name,
+                                text: item.name,
+                                fats: item.fats,
+                                proteins: item.proteins,
+                                fibre: item.fibre,
+                                carbs: item.carbohydrates
+                            }
+                        })
+                    };
+                }
+            }
+        });
     }
 
 </script>
