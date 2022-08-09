@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
             crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
 </head>
 <body>
@@ -69,5 +70,14 @@
         </div>
     </form>
 </div>
+
+<script>
+    $(document).ready(function () {
+        $('#proteins').val("")
+        $('#carbohydrates').val("")
+        $('#fats').val("")
+        $('#fibre').val("")
+    })
+</script>
 </body>
 </html>

@@ -22,7 +22,7 @@
 <div th:insert="navbar :: navbar"></div>
 
 <div class="container-fluid">
-    <form id="recipeForm" method="post" th:object="${recipe}">
+    <form id="recipeForm" method="post" th:object="${recipeTemplate}">
         <div class="row mt-5">
             <div class="container col-4">
 
@@ -31,7 +31,7 @@
                     <tr>
                         <th class="align-middle col-3">Recept
                         <td class="text-center align-middle col-6">
-                            <input th:field="${recipe.name}" id="recipeName" type="text" class="form-control"
+                            <input th:field="${recipeTemplate.name}" id="recipeName" type="text" class="form-control"
                                    placeholder="název receptu">
                         </td>
                     </tr>
@@ -55,21 +55,22 @@
                     </tr>
 
                     <tr th:id="'ingredient_id_'+${__${ingredientStat.index}__}"
-                        th:each="ingredient : ${recipe.recipeIngredients}">
+                        th:each="ingredient : ${recipeTemplate.recipeTemplateIngredients}">
                         <td th:id="'ingredient_id_'+${__${ingredientStat.index}__} + '_td'"
                             class="text-center align-middle col-6">
                             <select multiple="multiple"
-                                    th:id="'recipeIngredients' + ${__${ingredientStat.index}__} + '.ingredientId'"
-                                    th:name="'recipeIngredients[' + ${__${ingredientStat.index}__} + '].ingredientId'"
+                                    th:id="'recipeTemplateIngredients' + ${__${ingredientStat.index}__} + '.ingredientId'"
+                                    th:name="'recipeTemplateIngredients[' + ${__${ingredientStat.index}__} + '].ingredientId'"
                                     class="form-control input-lg select2-calc"></select>
                             <input hidden
-                                   th:value="'recipeIngredient_' + *{recipeIngredients[__${ingredientStat.index}__].ingredientId}">
+                                   th:value="'recipeTemplateIngredients' + *{recipeTemplateIngredients[__${ingredientStat.index}__].ingredientId}">
                         </td>
                         <td class="text-center align-middle col-3">
                             <input onchange="hideNutrientTooltip(this.id)" oninput="calculateNutrients(this.id)"
-                                   th:id="'recipeIngredients' + ${__${ingredientStat.index}__} + '.grams'"
-                                   th:value="*{recipeIngredients[__${ingredientStat.index}__].grams}"
-                                   type="number" class="recipe-input form-control">
+                                   th:id="'recipeTemplateIngredients' + ${__${ingredientStat.index}__} + '.grams'"
+                                   th:name="'recipeTemplateIngredients[' + ${__${ingredientStat.index}__} + '].grams'"
+                                   th:value="*{recipeTemplateIngredients[__${ingredientStat.index}__].grams}"
+                                   type="number" class="recipeTemplate-input form-control">
                         </td>
                         <td class="text-center align-middle col-3">
                             <button th:id="'ingr_info_'+${__${ingredientStat.index}__}" disabled type="button"
@@ -85,6 +86,10 @@
                             <input hidden th:id="'nutr_carbs_'+${__${ingredientStat.index}__}" type="text">
                             <input hidden th:id="'nutr_fibre_'+${__${ingredientStat.index}__}" type="text">
                             <input hidden th:id="'nutr_proteins_'+${__${ingredientStat.index}__}" type="text">
+                            <input hidden type="text"
+                                   th:id="'recipeTemplateIngredients' + ${__${ingredientStat.index}__} + '.id'"
+                                   th:name="'recipeTemplateIngredients[' + ${__${ingredientStat.index}__} + '].id'"
+                                   th:value="*{recipeTemplateIngredients[__${ingredientStat.index}__].id}">
                         </td>
                     </tr>
 
@@ -102,31 +107,31 @@
                     <tr>
                         <th class="align-middle">Sacharidy</th>
                         <td class="text-center align-middle">
-                            <input class="recipe-disabled-input" type="text" disabled value="0" id="carbsTotal">
+                            <input class="recipeTemplate-disabled-input" type="text" disabled value="0" id="carbsTotal">
                         </td>
                     </tr>
                     <tr>
                         <th class="align-middle">Bílkoviny</th>
                         <td class="text-center align-middle">
-                            <input class="recipe-disabled-input" type="text" disabled value="0" id="proteinsTotal">
+                            <input class="recipeTemplate-disabled-input" type="text" disabled value="0" id="proteinsTotal">
                         </td>
                     </tr>
                     <tr>
                         <th class="align-middle">Tuky</th>
                         <td class="text-center align-middle">
-                            <input class="recipe-disabled-input" type="text" disabled value="0" id="fatsTotal">
+                            <input class="recipeTemplate-disabled-input" type="text" disabled value="0" id="fatsTotal">
                         </td>
                     </tr>
                     <tr>
                         <th class="align-middle">Vláknina</th>
                         <td class="text-center align-middle">
-                            <input class="recipe-disabled-input" type="text" disabled value="0" id="fibreTotal">
+                            <input class="recipeTemplate-disabled-input" type="text" disabled value="0" id="fibreTotal">
                         </td>
                     </tr>
                     <tr>
                         <th class="align-middle">kJ</th>
                         <td class="text-center align-middle">
-                            <input class="recipe-disabled-input" type="text" disabled value="0" id="kJTotal">
+                            <input class="recipeTemplate-disabled-input" type="text" disabled value="0" id="kJTotal">
                         </td>
                     </tr>
 
@@ -136,7 +141,7 @@
 
 
             <div class="container col-4 opacity-75">
-                <textarea th:field="${recipe.description}" class="form-control" id="recipeDescription"
+                <textarea th:field="${recipeTemplate.description}" class="form-control" id="recipeDescription"
                           placeholder="Popis receptu" rows="20"
                           name="notes"></textarea>
                 <div class="row mx-auto col-5">
@@ -194,12 +199,12 @@
             $("#ingr_info_" + tdId).prop("disabled", false);
 
 
-            let gramsInputId = "recipeIngredients" + tdId + "\\.grams"
+            let gramsInputId = "recipeTemplateIngredients" + tdId + "\\.grams"
             let gramsAmount = $("#" + gramsInputId).val()
             let gramsCoef = gramsAmount / 100
             let inputWholeId = $("#ingredient_id_" + tdId + "_td").children()[0].id
             let ingredientWholeId = $("#ingredient_id_" + tdId + "_td").children()[2].value
-            let ingredientId = ingredientWholeId.slice(ingredientWholeId.lastIndexOf('_') + 1, ingredientWholeId.length);
+            let ingredientId = ingredientWholeId.replace(/^\D+/g, '');
 
             $('#remove_' + tdId).click(function () {
                 $(this).closest('tr').remove();
@@ -229,8 +234,8 @@
                     }
                     var newOption = new Option(result.name, result.id, true, true);
                     // Append it to the select
-                    let select2Selector = '#recipeIngredients' + tdId + '\\.ingredientId';
-                    var gramsSelector = "#recipeIngredients" + tdId + "\\.grams";
+                    let select2Selector = '#recipeTemplateIngredients' + tdId + '\\.ingredientId';
+                    var gramsSelector = "#recipeTemplateIngredients" + tdId + "\\.grams";
                     $(select2Selector).on('select2:select', function (e) {
                         var data = e.params.data;
                         $('#nutr_fats_' + tdId).val(data.fats)
@@ -250,7 +255,7 @@
                         $("#ingr_info_" + tdId).prop("disabled", true);
                         $(gramsSelector).prop("disabled", true);
                         $(gramsSelector).val("");
-                        calculateNutrients("recipeIngredients"+tdId+".grams")
+                        calculateNutrients("recipeTemplateIngredients"+tdId+".grams")
                         bootstrap.Tooltip.getInstance('#ingr_info_' + tdId).hide()
 
                     });
@@ -266,7 +271,7 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     function hideNutrientTooltip(wholeId) {
-        //recipeIngredients'+new_ingredient_no+'.grams
+        //recipeTemplateIngredients'+new_ingredient_no+'.grams
         var id = wholeId.replace(/^\D+/g, '')
         id = id.slice(0, id.lastIndexOf('.'));
         const tooltipElm = bootstrap.Tooltip.getInstance('#ingr_info_' + id)
@@ -281,7 +286,7 @@
         for (i = 3; i < ingrCount; i++) {
             let wholeId = $('#new_ingredient').children()[i].id
             let id = wholeId.slice(wholeId.lastIndexOf('_') + 1, wholeId.length);
-            let grams = $("#recipeIngredients" + id + "\\.grams").val();
+            let grams = $("#recipeTemplateIngredients" + id + "\\.grams").val();
             if (grams !== "") {
                 let gramCoef = grams / 100
                 fats = parseInt($("#nutr_fats_" + id).val()) * gramCoef
@@ -312,7 +317,7 @@
             bootstrap.Tooltip.getInstance('#ingr_info_' + id).dispose()
         }
 
-        let grams = $("#recipeIngredients" + id + "\\.grams").val();
+        let grams = $("#recipeTemplateIngredients" + id + "\\.grams").val();
         let gramCoef = grams / 100
 
         let proteins, fats, carbs, fibre, kJ
@@ -337,17 +342,17 @@
 
     function addIngredient() {
         var new_ingredient_no = 0;
-        while ($("#recipeIngredients" + new_ingredient_no + "\\.ingredientId").val() != null) {
+        while ($("#recipeTemplateIngredients" + new_ingredient_no + "\\.ingredientId").val() != null) {
             new_ingredient_no += 1;
         }
 
-        var gramsSelector = "#recipeIngredients" + new_ingredient_no + "\\.grams";
-        var select2Selector = "#recipeIngredients" + new_ingredient_no + "\\.ingredientId";
+        var gramsSelector = "#recipeTemplateIngredients" + new_ingredient_no + "\\.grams";
+        var select2Selector = "#recipeTemplateIngredients" + new_ingredient_no + "\\.ingredientId";
 
 
         var new_input = '<tr id="ingredient_id_' + new_ingredient_no + '"> <td class="text-center align-middle col-6"> ' +
-            '<select multiple="multiple" id="recipeIngredients' + new_ingredient_no + '.ingredientId" name="recipeIngredients[' + new_ingredient_no + '].ingredientId" class="form-control input-lg select2-calc"> </select> ' +
-            '</td> <td class="text-center align-middle col-3"> <input onchange="hideNutrientTooltip(this.id)" oninput="calculateNutrients(this.id)" id="recipeIngredients' + new_ingredient_no + '.grams" name="recipeIngredients[' + new_ingredient_no + '].grams" type="number" class="recipe-input form-control"> ' +
+            '<select multiple="multiple" id="recipeTemplateIngredients' + new_ingredient_no + '.ingredientId" name="recipeTemplateIngredients[' + new_ingredient_no + '].ingredientId" class="form-control input-lg select2-calc"> </select> ' +
+            '</td> <td class="text-center align-middle col-3"> <input onchange="hideNutrientTooltip(this.id)" oninput="calculateNutrients(this.id)" id="recipeTemplateIngredients' + new_ingredient_no + '.grams" name="recipeTemplateIngredients[' + new_ingredient_no + '].grams" type="number" class="recipeTemplate-input form-control"> ' +
             '</td> <td class="text-center align-middle col-3"> <button disabled type="button" class="btn ingr-button btn-secondary ingredient-tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-html="true" id="ingr_info_' + new_ingredient_no + '" data-bs-title=" ">i</button>' +
             '</td> <td class="text-center align-middle col-3"> <a type="button" id="remove_' + new_ingredient_no + '" class="btn btn-danger">X</a>' +
             '<input hidden id="nutr_fats_' + new_ingredient_no + '" type="text">' +
@@ -386,7 +391,7 @@
             $("#ingr_info_" + new_ingredient_no).prop("disabled", true);
             $(gramsSelector).prop("disabled", true);
             $(gramsSelector).val("");
-            calculateNutrients("recipeIngredients"+new_ingredient_no+".grams")
+            calculateNutrients("recipeTemplateIngredients"+new_ingredient_no+".grams")
             bootstrap.Tooltip.getInstance('#ingr_info_' + new_ingredient_no).hide()
         });
 

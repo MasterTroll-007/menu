@@ -1,8 +1,6 @@
 package cz.menu.dto;
 
 import cz.client.dto.ClientDto;
-import cz.ingredient.dto.IngredientDto;
-import cz.ingredient.entity.Ingredient;
 import cz.menu.entity.Menu;
 import cz.recipe.dto.RecipeDto;
 import lombok.AllArgsConstructor;

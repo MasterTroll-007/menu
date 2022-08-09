@@ -24,7 +24,7 @@
             <thead>
             <tr>
                 <th class="text-center col-2">
-                    <a th:href="@{/recipes(size=${recipePage.size}, page=${pageNumber}, sortField='name', sortDir=${reverseSortDir})}">
+                    <a th:href="@{/recipes(size=${recipeTemplatePage.size}, page=${pageNumber}, sortField='name', sortDir=${reverseSortDir})}">
                         Název
                     </a>
                 </th>
@@ -43,20 +43,20 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="recipe, iStat : ${recipePage.content}">
-                <td class="text-center align-middle" th:text="${recipe.name}"></td>
-                <td class="text-center align-middle" th:text="${recipe.recipeIngredients.size}"></td>
+            <tr th:each="recipeTemplate, iStat : ${recipeTemplatePage.content}">
+                <td class="text-center align-middle" th:text="${recipeTemplate.name}"></td>
+                <td class="text-center align-middle" th:text="${recipeTemplate.recipeTemplateIngredients.size}"></td>
 <!--
                 <td class="text-center align-middle" th:text="${kJ}"></td>
 -->
                 <td class="text-center align-middle">
-                    <a th:href="@{/recipes/edit/{id}(id=${recipe.id})}"
+                    <a th:href="@{/recipes/edit/{id}(id=${recipeTemplate.id})}"
                        class="btn btn-primary blue">
                         Upravit
                     </a>
                 </td>
                 <td class="text-center align-middle">
-                    <a th:href="@{/recipes/delete(size=${recipePage.size}, id=${recipe.id}, page=${currentPage}, sortField=${sortField}, sortDir=${sortDir})}"
+                    <a th:href="@{/recipes/delete(size=${recipeTemplatePage.size}, id=${recipeTemplate.id}, page=${currentPage}, sortField=${sortField}, sortDir=${sortDir})}"
                        class="btn btn-danger red" onclick="return confirm('Opravdu chcete smazat tento recept?');">
                         Smazat
                     </a>
@@ -73,22 +73,22 @@
             </footer>
             <ul class="mt-2 mb-2 pagination justify-content-center" style="padding-bottom: 10px;">
                 <li class="page-item"
-                    th:if="${recipePage.totalPages > 1}">
-                    <a th:href="@{/recipes(size=${recipePage.size}, page=1, sortField=${sortField}, sortDir=${sortDir})}"
+                    th:if="${recipeTemplatePage.totalPages > 1}">
+                    <a th:href="@{/recipes(size=${recipeTemplatePage.size}, page=1, sortField=${sortField}, sortDir=${sortDir})}"
                        class="page-link">
                         První
                     </a>
                 </li>
-                <li class="page-item" th:classappend="${pageNumber==recipePage.number + 1} ? active"
-                    th:if="${recipePage.totalPages > 0}" th:each="pageNumber : ${pageNumbers}">
-                    <a th:href="@{/recipes(size=${recipePage.size}, page=${pageNumber}, sortField=${sortField}, sortDir=${sortDir})}"
+                <li class="page-item" th:classappend="${pageNumber==recipeTemplatePage.number + 1} ? active"
+                    th:if="${recipeTemplatePage.totalPages > 0}" th:each="pageNumber : ${pageNumbers}">
+                    <a th:href="@{/recipes(size=${recipeTemplatePage.size}, page=${pageNumber}, sortField=${sortField}, sortDir=${sortDir})}"
                        th:text="${pageNumber}"
                        class="page-link">
                     </a>
                 </li>
                 <li class="page-item"
-                    th:if="${recipePage.totalPages > 1}">
-                    <a th:href="@{/recipes(size=${recipePage.size}, page=${totalPages}, sortField=${sortField}, sortDir=${sortDir})}"
+                    th:if="${recipeTemplatePage.totalPages > 1}">
+                    <a th:href="@{/recipes(size=${recipeTemplatePage.size}, page=${totalPages}, sortField=${sortField}, sortDir=${sortDir})}"
                        class="page-link">
                         Poslední
                     </a>

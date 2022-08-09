@@ -1,73 +1,95 @@
 package cz.recipe.service;
 
-import cz.recipe.dto.RecipeDto;
-import cz.recipe.entity.Recipe;
+import cz.recipe.dto.RecipeTemplateDto;
+import cz.recipe.dto.RecipeTemplateIngredientDto;
+import cz.recipe.entity.RecipeTemplate;
+import cz.recipe.entity.RecipeTemplateIngredient;
 import cz.recipe.exception.RecipeException;
-import cz.repository.RecipeRepository;
+import cz.repository.RecipeTemplateIngredientRepository;
+import cz.repository.RecipeTemplateRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class RecipeService implements IRecipeService{
+public class RecipeService implements IRecipeService {
 
-    private final RecipeRepository recipeRepository;
+    private final RecipeTemplateRepository recipeTemplateRepository;
+    private final RecipeTemplateIngredientRepository recipeTemplateIngredientRepository;
 
     @Override
-    public Recipe addRecipe(RecipeDto recipeDto) {
-        recipeDto.setRecipeIngredients(
-                recipeDto.getRecipeIngredients()
-                .stream()
-                .filter(recipeIngredient -> recipeIngredient.getIngredientId() != null)
-                .toList()
+    public RecipeTemplate addRecipe(RecipeTemplateDto recipeTemplateDto) {
+        recipeTemplateDto.setRecipeTemplateIngredients(
+                recipeTemplateDto.getRecipeTemplateIngredients()
+                        .stream()
+                        .filter(ingredientDto -> ingredientDto.getIngredientId() != null)
+                        .toList()
         );
-        Recipe recipeEntity = recipeEntityMapper(recipeDto);
-        return recipeRepository.save(recipeEntity);
+        RecipeTemplate recipeTemplateEntity = recipeTemplateEntityMapper(recipeTemplateDto);
+        RecipeTemplate savedEntity = recipeTemplateRepository.save(recipeTemplateEntity);
+
+        savedEntity.getRecipeTemplateIngredients().forEach(ingredient -> ingredient.setRecipeTemplateId(savedEntity.getId()));
+        return recipeTemplateRepository.save(savedEntity);
     }
 
     @Override
-    public RecipeDto findById(Long recipeId) throws RecipeException {
-        Recipe recipe = recipeRepository.findById(recipeId)
+    public RecipeTemplateDto findById(Long recipeId) throws RecipeException {
+        RecipeTemplate recipeTemplate = recipeTemplateRepository.findById(recipeId)
                 .orElseThrow(() -> new RecipeException("Nenalezeny žádný recept s daným ID=" + recipeId));
-        return new RecipeDto(recipe);
+        return new RecipeTemplateDto(recipeTemplate);
     }
 
     @Override
-    public RecipeDto updateRecipeForm(Model model, Long recipeId) throws RecipeException {
-        Recipe entity = recipeRepository.findById(recipeId)
+    @Transactional
+    public RecipeTemplateDto updateRecipeForm(RecipeTemplateDto dto, Long recipeId) throws RecipeException {
+        RecipeTemplate entity = recipeTemplateRepository.findById(recipeId)
                 .orElseThrow(() -> new RecipeException("Nenalezeny žádný recept s daným ID=" + recipeId));
-        //TODO execute update
-        return new RecipeDto(entity);
+        List<RecipeTemplateIngredient> ingredients = entity.getRecipeTemplateIngredients();
+        List<RecipeTemplateIngredientDto> ingredientsDto = dto.getRecipeTemplateIngredients()
+                .stream()
+                .filter(ingredient -> ingredient.getIngredientId() != null)
+                .toList();
+        //TODO      have IDs of ingredientsDto -> map it to the entity and save it ->
+        //TODO      compare id, if it exists, replace entity.get(i) content with dto.get(i) content;
+        //TODO      If there is new id, just store it into new RecipeTemplateIngredient() and add it to the list before save
+        //TODO      If there is id in entity which is not at dto, remove it by deleteById(entity.get(i).getId());
+
+        return null;
     }
 
     @Override
     public void deleteRecipe(Long recipeId) {
-        recipeRepository.deleteById(recipeId);
+        recipeTemplateRepository.deleteById(recipeId);
     }
 
     @Override
-    public Page<RecipeDto> findPaginated(int currentPage, int pageSize, String sortField, String sortDir) {
+    public Page<RecipeTemplateDto> findPaginated(int currentPage, int pageSize, String sortField, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortField).ascending() :
                 Sort.by(sortField).descending();
         Pageable pageable = PageRequest.of(currentPage - 1, pageSize, sort);
 
-        Page<Recipe> recipes = recipeRepository.findAll(pageable);
-        List<RecipeDto> recipesDto = new ArrayList<>();
+        Page<RecipeTemplate> recipes = recipeTemplateRepository.findAll(pageable);
+        List<RecipeTemplateDto> recipeTemplateDtos = new ArrayList<>();
         recipes.forEach(recipe ->
-                recipesDto.add(new RecipeDto(recipe)));
+                recipeTemplateDtos.add(new RecipeTemplateDto(recipe)));
 
-        return new PageImpl<>(recipesDto, pageable, recipes.getTotalElements());
+        return new PageImpl<>(recipeTemplateDtos, pageable, recipes.getTotalElements());
     }
 
-    private Recipe recipeEntityMapper(RecipeDto dto) {
+    private RecipeTemplate recipeTemplateEntityMapper(RecipeTemplateDto dto) {
         ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(dto, Recipe.class);
+        return modelMapper.map(dto, RecipeTemplate.class);
+    }
+
+    private RecipeTemplateIngredient recipeTemplateIngredientEntityMapper(RecipeTemplateIngredientDto dto) {
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(dto, RecipeTemplateIngredient.class);
     }
 
 }

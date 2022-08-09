@@ -112,7 +112,7 @@ body {
     }
 }
 
-.recipe-disabled-input {
+.recipeTemplate-disabled-input {
     width: 80px;
     background: white;
     font-weight: bold;

@@ -30,7 +30,7 @@ public class IngredientControl {
     private final IIngredientService ingredientService;
 
 
-    @GetMapping("/{id}/edit")
+    @GetMapping("/edit/{id}")
     public String updateIngredientForm(Model model, @PathVariable Long id) throws IngredientException {
         IngredientDto ingredientDto = ingredientService.updateIngredientForm(model, id);
         model.addAttribute("ingredient", ingredientDto);
