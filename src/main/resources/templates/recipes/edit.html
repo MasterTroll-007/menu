@@ -249,7 +249,10 @@
                         $('#nutr_proteins_' + tdId).val(0)
                         $("#ingr_info_" + tdId).prop("disabled", true);
                         $(gramsSelector).prop("disabled", true);
+                        $(gramsSelector).val("");
                         calculateNutrients("recipeIngredients"+tdId+".grams")
+                        bootstrap.Tooltip.getInstance('#ingr_info_' + tdId).hide()
+
                     });
 
                     $(select2Selector).append(newOption).trigger('change');
@@ -354,8 +357,8 @@
             '</td></tr>';
         $('#new_ingredient').append(new_input);
 
-        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+        let tooltipTriggerEl = $('#ingr_info_' + new_ingredient_no)
+        new bootstrap.Tooltip(tooltipTriggerEl)
 
         $(gramsSelector).prop("disabled", true);
 

@@ -229,8 +229,8 @@
         $('#new_ingredient').append(new_input);
         $('#total_ingredients').val(total_ingredients)
 
-        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+        let tooltipTriggerEl = $('#ingr_info_' + new_ingredient_no)
+        new bootstrap.Tooltip(tooltipTriggerEl)
 
         $(gramsSelector).prop("disabled", true);
 
