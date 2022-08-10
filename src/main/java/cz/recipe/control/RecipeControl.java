@@ -3,6 +3,7 @@ package cz.recipe.control;
 import cz.recipe.dto.RecipeTemplateDto;
 import cz.recipe.exception.RecipeException;
 import cz.recipe.service.IRecipeService;
+import cz.recipe.service.IRecipeTemplateIngredientService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -23,6 +24,7 @@ public class RecipeControl {
     private static final String REDIRECT_EDIT = "redirect:/recipes/edit/";
 
     private final IRecipeService recipeService;
+    private final IRecipeTemplateIngredientService recipeTemplateIngredientService;
 
     @GetMapping
     public String getList(Model model, @RequestParam(name = "page", defaultValue = "1") Integer currentPage,
@@ -89,4 +91,9 @@ public class RecipeControl {
         return "redirect:/recipes?size=" + size + "&page=" + page + "&sortField=" + sortField + "&sortDir=" + sortDir;
     }
 
+    @PostMapping("/removeRecipeTemplateIngredient/{ingredientId}/{id}")
+    public String removeRecipeTemplateIngredient(@PathVariable Long ingredientId, @PathVariable Long id) {
+        recipeTemplateIngredientService.removeRecipeTemplateIngredient(ingredientId);
+        return REDIRECT_EDIT + id;
+    }
 }

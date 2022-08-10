@@ -46,6 +46,7 @@
                     <tbody id="new_ingredient">
                     <input type="hidden" value="0" id="total_ingredients">
                     <input type="hidden" value="0" id="new_ingredient_id">
+                    <input hidden type="text" th:field="${recipeTemplate.id}">
                     <tr>
                         <th class="text-center align-middle col-3">Ingredience</th>
                         <th class="text-center align-middle text-center col-6">Gramáž</th>
@@ -90,6 +91,10 @@
                                    th:id="'recipeTemplateIngredients' + ${__${ingredientStat.index}__} + '.id'"
                                    th:name="'recipeTemplateIngredients[' + ${__${ingredientStat.index}__} + '].id'"
                                    th:value="*{recipeTemplateIngredients[__${ingredientStat.index}__].id}">
+                            <input hidden type="text"
+                                   th:id="'recipeTemplateIngredients' + ${__${ingredientStat.index}__} + '.recipeTemplateId'"
+                                   th:name="'recipeTemplateIngredients[' + ${__${ingredientStat.index}__} + '].recipeTemplateId'"
+                                   th:value="${recipeTemplate.id}">
                         </td>
                     </tr>
 
@@ -207,7 +212,7 @@
             let ingredientId = ingredientWholeId.replace(/^\D+/g, '');
 
             $('#remove_' + tdId).click(function () {
-                $(this).closest('tr').remove();
+                removeFromDb(this);
                 calculateOverallNutrients()
             });
 
@@ -310,6 +315,24 @@
         }
     }
 
+    function removeFromDb(element) {
+        let ingredientId = $('#'+element.id).parent().children()[5].value
+        let recipeId = $('#id').val()
+        let isEmpty = $('#'+element.id).parent().parent().children()[0]
+        let selectValue = isEmpty.children[0].value
+        if(selectValue !== '') {
+            //TODO add recipeID
+            $.ajax({
+                url: "/recipes/removeRecipeTemplateIngredient/" + ingredientId + "/" + recipeId,
+                type: 'POST',
+                success: function (result) {
+                    $(element).closest('tr').remove();
+                }
+            });
+        } else {
+            $(element).closest('tr').remove();
+        }
+    }
     function calculateNutrients(tooltipId) {
         let disposableTooltip = tooltipId.replace(/^\D+/g, '')
         let id = disposableTooltip.slice(0, disposableTooltip.lastIndexOf('.'));
@@ -350,25 +373,38 @@
         var select2Selector = "#recipeTemplateIngredients" + new_ingredient_no + "\\.ingredientId";
 
 
-        var new_input = '<tr id="ingredient_id_' + new_ingredient_no + '"> <td class="text-center align-middle col-6"> ' +
-            '<select multiple="multiple" id="recipeTemplateIngredients' + new_ingredient_no + '.ingredientId" name="recipeTemplateIngredients[' + new_ingredient_no + '].ingredientId" class="form-control input-lg select2-calc"> </select> ' +
-            '</td> <td class="text-center align-middle col-3"> <input onchange="hideNutrientTooltip(this.id)" oninput="calculateNutrients(this.id)" id="recipeTemplateIngredients' + new_ingredient_no + '.grams" name="recipeTemplateIngredients[' + new_ingredient_no + '].grams" type="number" class="recipeTemplate-input form-control"> ' +
-            '</td> <td class="text-center align-middle col-3"> <button disabled type="button" class="btn ingr-button btn-secondary ingredient-tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-html="true" id="ingr_info_' + new_ingredient_no + '" data-bs-title=" ">i</button>' +
-            '</td> <td class="text-center align-middle col-3"> <a type="button" id="remove_' + new_ingredient_no + '" class="btn btn-danger">X</a>' +
-            '<input hidden id="nutr_fats_' + new_ingredient_no + '" type="text">' +
-            '<input hidden id="nutr_carbs_' + new_ingredient_no + '" type="text">' +
-            '<input hidden id="nutr_fibre_' + new_ingredient_no + '" type="text">' +
-            '<input hidden id="nutr_proteins_' + new_ingredient_no + '" type="text">' +
-            '</td></tr>';
+        var new_input =
+            '<tr id="ingredient_id_' + new_ingredient_no + '"> ' +
+            '   <td class="text-center align-middle col-6"> ' +
+                    '<select multiple="multiple" id="recipeTemplateIngredients' + new_ingredient_no + '.ingredientId" name="recipeTemplateIngredients[' + new_ingredient_no + '].ingredientId" class="form-control input-lg select2-calc"> </select> ' +
+                '</td> ' +
+                '<td class="text-center align-middle col-3"> ' +
+                    '<input onchange="hideNutrientTooltip(this.id)" oninput="calculateNutrients(this.id)" id="recipeTemplateIngredients' + new_ingredient_no + '.grams" name="recipeTemplateIngredients[' + new_ingredient_no + '].grams" type="number" class="recipeTemplate-input form-control"> ' +
+                '</td> ' +
+                '<td class="text-center align-middle col-3"> ' +
+                    '<button disabled type="button" class="btn ingr-button btn-secondary ingredient-tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-html="true" id="ingr_info_' + new_ingredient_no + '" data-bs-title=" ">i</button> ' +
+                '</td> ' +
+                '<td class="text-center align-middle col-3"> ' +
+                    '<a type="button" id="remove_' + new_ingredient_no + '" class="btn btn-danger">X</a>' +
+                    '<input hidden id="nutr_fats_' + new_ingredient_no + '" type="text">' +
+                    '<input hidden id="nutr_carbs_' + new_ingredient_no + '" type="text">' +
+                    '<input hidden id="nutr_fibre_' + new_ingredient_no + '" type="text">' +
+                    '<input hidden id="nutr_proteins_' + new_ingredient_no + '" type="text">' +
+                    '<input hidden type="text" id="recipeTemplateIngredients'+new_ingredient_no+'.recipeTemplateId" name="recipeTemplateIngredients['+new_ingredient_no+'].recipeTemplateId"> ' +
+                '</td>' +
+            '</tr>';
         $('#new_ingredient').append(new_input);
 
+        $('#recipeTemplateIngredients'+new_ingredient_no+'\\.recipeTemplateId').val(
+            $("#id").val()
+        )
         let tooltipTriggerEl = $('#ingr_info_' + new_ingredient_no)
         new bootstrap.Tooltip(tooltipTriggerEl)
 
         $(gramsSelector).prop("disabled", true);
 
         $('#remove_' + new_ingredient_no).click(function () {
-            $(this).closest('tr').remove();
+            removeFromDb(this);
             calculateOverallNutrients()
         });
 

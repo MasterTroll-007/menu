@@ -55,12 +55,31 @@ public class RecipeService implements IRecipeService {
                 .stream()
                 .filter(ingredient -> ingredient.getIngredientId() != null)
                 .toList();
-        //TODO      have IDs of ingredientsDto -> map it to the entity and save it ->
-        //TODO      compare id, if it exists, replace entity.get(i) content with dto.get(i) content;
-        //TODO      If there is new id, just store it into new RecipeTemplateIngredient() and add it to the list before save
-        //TODO      If there is id in entity which is not at dto, remove it by deleteById(entity.get(i).getId());
 
-        return null;
+        List<RecipeTemplateIngredient> newIngredients = new ArrayList<>();
+        if(!ingredientsDto.isEmpty()) {
+            ingredientsDto.forEach(ingredientDto -> {
+                if (ingredientDto.getId() != null) {
+                    ingredients.forEach(ingredient -> {
+                        if (ingredient.getId().equals(ingredientDto.getId())) {
+                            ingredient.setIngredientId(ingredientDto.getIngredientId());
+                            ingredient.setGrams((long) ingredientDto.getGrams());
+                        }
+                    });
+                } else {
+                    RecipeTemplateIngredient newIngredient = new RecipeTemplateIngredient();
+                    newIngredient.setIngredientId(ingredientDto.getIngredientId());
+                    newIngredient.setRecipeTemplateId(ingredientDto.getRecipeTemplateId());
+                    newIngredient.setGrams((long) ingredientDto.getGrams());
+                    newIngredients.add(newIngredient);
+                }
+            });
+            ingredients.addAll(newIngredients);
+            entity.setName(dto.getName());
+            entity.setDescription(dto.getDescription());
+            return new RecipeTemplateDto(recipeTemplateRepository.save(entity));
+        }
+        return new RecipeTemplateDto();
     }
 
     @Override
@@ -85,11 +104,6 @@ public class RecipeService implements IRecipeService {
     private RecipeTemplate recipeTemplateEntityMapper(RecipeTemplateDto dto) {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(dto, RecipeTemplate.class);
-    }
-
-    private RecipeTemplateIngredient recipeTemplateIngredientEntityMapper(RecipeTemplateIngredientDto dto) {
-        ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(dto, RecipeTemplateIngredient.class);
     }
 
 }

@@ -13,6 +13,7 @@ public class RecipeIngredientDto implements Serializable {
     private Long id;
     private float grams;
     private Long ingredientId;
+    private Long recipeId;
 
 
     public RecipeIngredientDto(RecipeIngredient recipeIngredient) {
