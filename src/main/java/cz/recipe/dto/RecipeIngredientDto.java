@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class RecipeIngredientDto implements Serializable {
 
     private Long id;
-    private float grams;
+    private Long grams;
     private Long ingredientId;
     private Long recipeId;
 

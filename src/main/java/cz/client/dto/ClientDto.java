@@ -14,9 +14,9 @@ public class ClientDto implements Serializable {
     private Sex sex;
     private String firstName;
     private String secondName;
-    private int age;
-    private int weight;
-    private int height;
+    private long age;
+    private long weight;
+    private long height;
     private float bmrCoef;
     private BMRDto bmr;
 

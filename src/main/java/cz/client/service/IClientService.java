@@ -13,8 +13,12 @@ public interface IClientService {
     Client saveClientForm(Model model, ClientDto clientDto);
 
     void saveBmr(Model model, BMRDto bmrDto, Long menuId) throws MenuException, ClientException;
+
     Page<ClientDto> findPaginated(int currentPage, int pageSize, String sortField, String sortDir);
+
     void calculateBMR(Model model, Long menuId) throws MenuException, ClientException;
+
+    void deleteClient(Long id);
 
     void mealPlan(Model model, Long menuId);
 

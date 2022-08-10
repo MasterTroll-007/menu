@@ -35,6 +35,17 @@ public class ClientController {
         return MENU_FORM;
     }
 
+    @GetMapping("/delete")
+    public String deleteRecipe(@RequestParam(name = "id") Long id,
+                               @RequestParam(name = "page") Long page,
+                               @RequestParam(name = "size") Long size,
+                               @RequestParam(name = "sortField") String sortField,
+                               @RequestParam(name = "sortDir") String sortDir) {
+        clientService.deleteClient(id);
+        return "redirect:/clients?size=" + size + "&page=" + page + "&sortField=" + sortField + "&sortDir=" + sortDir;
+    }
+
+
     @GetMapping
     public String getClients(Model model, @RequestParam(name = "page", defaultValue = "1") Integer currentPage,
                           @RequestParam(name = "size", defaultValue = "10") Integer size,

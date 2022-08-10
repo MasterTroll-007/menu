@@ -18,11 +18,11 @@ import java.util.Objects;
 public class Ingredient extends AbstractPersistable implements Serializable {
 
     private String name;
-    private float proteins;
-    private float carbohydrates;
-    private float fats;
-    private float fibre;
-    private float kJ;
+    private Long proteins;
+    private Long carbohydrates;
+    private Long fats;
+    private Long fibre;
+    private Long kJ;
 
     public void calculateKj() {
         this.kJ = proteins * 17 + carbohydrates * 17 + fats * 38;

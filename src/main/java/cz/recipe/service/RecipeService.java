@@ -63,14 +63,14 @@ public class RecipeService implements IRecipeService {
                     ingredients.forEach(ingredient -> {
                         if (ingredient.getId().equals(ingredientDto.getId())) {
                             ingredient.setIngredientId(ingredientDto.getIngredientId());
-                            ingredient.setGrams((long) ingredientDto.getGrams());
+                            ingredient.setGrams(ingredientDto.getGrams());
                         }
                     });
                 } else {
                     RecipeTemplateIngredient newIngredient = new RecipeTemplateIngredient();
                     newIngredient.setIngredientId(ingredientDto.getIngredientId());
                     newIngredient.setRecipeTemplateId(ingredientDto.getRecipeTemplateId());
-                    newIngredient.setGrams((long) ingredientDto.getGrams());
+                    newIngredient.setGrams(ingredientDto.getGrams());
                     newIngredients.add(newIngredient);
                 }
             });

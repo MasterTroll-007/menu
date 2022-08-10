@@ -44,6 +44,9 @@
                     <th class="text-center col-1">
                         Vláknina
                     </th>
+                    <th class="text-center col-1">
+                        kJ
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -52,17 +55,20 @@
                         <input th:field="${ingredient.name}" id="name" type="text" class="form-control">
                     </td>
                     <td class="text-center align-middle">
-                        <input th:field="${ingredient.proteins}" id="proteins" type="text" class="form-control">
+                        <input oninput="calculateKJ()" th:field="${ingredient.proteins}" id="proteins" type="number" class="form-control">
                     </td>
                     <td class="text-center align-middle">
-                        <input th:field="${ingredient.carbohydrates}" id="carbohydrates" type="text"
+                        <input oninput="calculateKJ()" th:field="${ingredient.carbohydrates}" id="carbohydrates" type="number"
                                class="form-control">
                     </td>
                     <td class="text-center align-middle">
-                        <input th:field="${ingredient.fats}" id="fats" type="text" class="form-control">
+                        <input oninput="calculateKJ()" th:field="${ingredient.fats}" id="fats" type="number" class="form-control">
                     </td>
                     <td class="text-center align-middle">
-                        <input th:field="${ingredient.fibre}" id="fibre" type="text" class="form-control">
+                        <input th:field="${ingredient.fibre}" id="fibre" type="number" class="form-control">
+                    </td>
+                    <td class="text-center align-middle">
+                        <input th:field="${ingredient.kJ}" id="kJ" type="number" class="form-control">
                     </td>
                 </tr>
                 </tbody>
@@ -73,18 +79,18 @@
 </form>
 
 <script>
+    function calculateKJ(){
+        let carbs = $('#carbohydrates').val();
+        let proteins = $('#proteins').val();
+        let fats = $('#fats').val();
+        $('#kJ').val(Math.round((carbs * 17 + proteins * 17) + (fats * 38)));
+    }
+
     $(document).ready(function () {
         let carbs = $('#carbohydrates').val();
         let proteins = $('#proteins').val();
         let fats = $('#fats').val();
         $('#overallKj').val(Math.round((carbs * 17 + proteins * 17) + (fats * 38)));
-
-        $(".kJcalculation").change(function () {
-            let carbs = $('#carbohydrates').val();
-            let proteins = $('#proteins').val();
-            let fats = $('#fats').val();
-            $('#overallKj').val(Math.round((carbs * 17 + proteins * 17) + (fats * 38)));
-        });
     });
 </script>
 

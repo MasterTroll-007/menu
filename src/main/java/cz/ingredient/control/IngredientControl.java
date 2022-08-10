@@ -22,7 +22,7 @@ import java.util.stream.IntStream;
 @RequestMapping("/ingredients")
 public class IngredientControl {
 
-    private static final String INGREDIENT_DETAIL = "ingredients/detail";
+    private static final String INGREDIENT_DETAIL = "ingredients/edit";
     private static final String NEW_INGREDIENT = "ingredients/add";
     private static final String INGREDIENT_LIST = "ingredients/list";
     private static final String REDIRECT_INGREDIENT_LIST = "redirect:/ingredients";
@@ -32,11 +32,17 @@ public class IngredientControl {
 
     @GetMapping("/edit/{id}")
     public String updateIngredientForm(Model model, @PathVariable Long id) throws IngredientException {
-        IngredientDto ingredientDto = ingredientService.updateIngredientForm(model, id);
+        IngredientDto ingredientDto = ingredientService.getIngredientForm(id);
         model.addAttribute("ingredient", ingredientDto);
         model.addAttribute("model", model);
 
         return INGREDIENT_DETAIL;
+    }
+
+    @PostMapping("/edit/{id}")
+    public String updateIngredient(@PathVariable Long id, @ModelAttribute IngredientDto ingredientDto) throws IngredientException {
+        ingredientService.updateIngredientForm(ingredientDto, id);
+        return REDIRECT_INGREDIENT_LIST;
     }
 
     @GetMapping
@@ -88,11 +94,6 @@ public class IngredientControl {
         model.addAttribute("model", model);
         model.addAttribute("ingredient", ingredientDto);
         return NEW_INGREDIENT;
-    }
-
-    @PostMapping("/{id}/edit")
-    public IngredientDto updateIngredient(@PathVariable Long id, Model model) throws IngredientException {
-        return ingredientService.updateIngredientForm(model, id);
     }
 
     @GetMapping("/delete")

@@ -21,11 +21,11 @@ public class Client extends AbstractPersistable implements Serializable {
 
     private String secondName;
 
-    private int age;
+    private long age;
 
-    private int weight;
+    private long weight;
 
-    private int height;
+    private long height;
 
     private float bmrCoef;
 

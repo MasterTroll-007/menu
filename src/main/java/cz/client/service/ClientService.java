@@ -91,6 +91,11 @@ public class ClientService implements IClientService {
     }
 
     @Override
+    public void deleteClient(Long id) {
+        clientRepository.deleteById(id);
+    }
+
+    @Override
     public void mealPlan(Model model, Long clientId) {
         Client clientEntity = clientRepository.getReferenceById(clientId);
 
@@ -98,21 +103,21 @@ public class ClientService implements IClientService {
 
     private BMR getBmr(Client client) {
         BMR bmr = new BMR();
-        final int age = client.getAge();
-        final int height = client.getHeight();
-        final int weight = client.getWeight();
-        double kj;
+        final long age = client.getAge();
+        final long height = client.getHeight();
+        final long weight = client.getWeight();
+        long kj;
 
         if(Sex.FEMALE.equals(client.getSex())) {
-            kj = ((10 * weight) + (6.25 * height) - (5 * age) - 161) * 4.184;
+            kj = (long)(((10 * weight) + (6.25 * height) - (5 * age) - 161) * 4.184) * (long)client.getBmrCoef();
         } else {
-            kj = ((10 * weight) + (6.25 * height) - (5 * age) + 5) * 4.184;
+            kj = (long)(((10 * weight) + (6.25 * height) - (5 * age) + 5) * 4.184) * (long)client.getBmrCoef();
         }
         bmr.setKJ(Precision.round(kj,1));
         // P/C/F = 25%/45%/30%
-        double proteins = Precision.round(bmr.getKJ() / 17 * 0.25, 1);
-        double carbs = Precision.round(bmr.getKJ() / 17 * 0.45, 1);
-        double fats = Precision.round(bmr.getKJ() / 38 * 0.30, 1);
+        long proteins = (long)Precision.round(bmr.getKJ() / 17 * 0.25, 0);
+        long carbs = (long)Precision.round(bmr.getKJ() / 17 * 0.45, 0);
+        long fats = (long)Precision.round(bmr.getKJ() / 38 * 0.30, 0);
         bmr.setFats(fats);
         bmr.setCarbohydrates(carbs);
         bmr.setProteins(proteins);

@@ -28,31 +28,31 @@
             <tr>
                 <th class="align-middle col-4">Sacharidy</th>
                 <td class="text-center align-middle col-6">
-                    <input th:field="${bmr.carbohydrates}" id="carbohydrates" type="text" class="form-control table-input kJcalculation">
+                    <input oninput="KJCalc()" th:field="${bmr.carbohydrates}" id="carbohydrates" type="number" class="form-control table-input">
                 </td>
             </tr>
             <tr>
                 <th class="align-middle col-4">Proteiny</th>
                 <td class="text-center align-middle col-6">
-                    <input th:field="${bmr.proteins}" id="proteins" type="text" class="form-control table-input kJcalculation">
+                    <input oninput="KJCalc()" th:field="${bmr.proteins}" id="proteins" type="number" class="form-control table-input">
                 </td>
             </tr>
             <tr>
                 <th class="align-middle col-4">Tuky</th>
                 <td class="text-center align-middle col-6">
-                    <input th:field="${bmr.fats}" id="fats" type="text" class="form-control table-input kJcalculation">
+                    <input oninput="KJCalc()" th:field="${bmr.fats}" id="fats" type="number" class="form-control table-input">
                 </td>
             </tr>
             <tr>
                 <th class="align-middle col-4">Vláknina</th>
                 <td class="text-center align-middle col-6">
-                    <input th:field="${bmr.fibres}" id="fibres" type="text" class="table-input form-control">
+                    <input th:field="${bmr.fibres}" id="fibres" type="number" class="table-input form-control">
                 </td>
             </tr>
             <tr>
                 <th class="align-middle col-4">Hodnota kJ dle g</th>
                 <td class="text-center align-middle col-6">
-                    <input th:field="${bmr.kJ}" id="overallKj" type="text" class="form-control table-input kJcalculationReverse">
+                    <input  oninput="nutrientCalc()" th:field="${bmr.kJ}" id="overallKj" type="number" class="form-control table-input">
                 </td>
             </tr>
             <tr>
@@ -68,37 +68,24 @@
 </form>
 
 <script>
-    $(document).ready(function () {
-        $(".kJcalculation").change(function () {
-            var carbs = $('#carbohydrates').val();
-            var proteins = $('#proteins').val();
-            var fats = $('#fats').val();
-            $('#carbohydrates').val(Math.round(carbs));
-            $('#proteins').val(Math.round(proteins));
-            $('#fats').val(Math.round(fats));
-            $('#overallKj').val(Math.round((carbs * 17 + proteins * 17) + (fats * 38)));
-        });
-        $(".kJcalculationReverse").change(function () {
-            var overall = $('#overallKj').val();
-            $('#carbohydrates').val(Math.round(overall * 0.45 / 17));
-            $('#proteins').val(Math.round(overall * 0.25 / 17));
-            $('#fats').val(Math.round(overall * 0.30 / 38));
-            $('#overallKj').val(overall);
-        });
-    });
 
-/*    function addCommas(nStr)
-    {
-        nStr += '';
-        x = nStr.split('.');
-        x1 = x[0];
-        x2 = x.length > 1 ? '.' + x[1] : '';
-        var rgx = /(\d+)(\d{3})/;
-        while (rgx.test(x1)) {
-            x1 = x1.replace(rgx, '$1' + '.' + '$2');
-        }
-        return x1 + x2;
-    }*/
+    function KJCalc(){
+        var carbs = $('#carbohydrates').val();
+        var proteins = $('#proteins').val();
+        var fats = $('#fats').val();
+        $('#carbohydrates').val(Math.round(carbs));
+        $('#proteins').val(Math.round(proteins));
+        $('#fats').val(Math.round(fats));
+        $('#overallKj').val(Math.round((carbs * 17 + proteins * 17) + (fats * 38)));
+    }
+
+    function nutrientCalc(){
+        var overall = $('#overallKj').val();
+        $('#carbohydrates').val(Math.round(overall * 0.45 / 17));
+        $('#proteins').val(Math.round(overall * 0.25 / 17));
+        $('#fats').val(Math.round(overall * 0.30 / 38));
+        $('#overallKj').val(overall);
+    }
 </script>
 
 </body>

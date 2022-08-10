@@ -9,6 +9,7 @@
             integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
             crossorigin="anonymous"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 </head>
 <body>
@@ -20,56 +21,56 @@
     <div class="container-fluid col-4 opacity-75">
         <table class="mt-5 table table-dark" style="margin-bottom: 0;">
             <tbody>
-                <tr>
-                    <th class="align-middle col-4">Pohlaví</th>
-                    <td class="text-center align-middle col-6">
-                        <select class="form-select form-select-md" id="sex" name="sex" th:field="${client.sex}">
+            <tr>
+                <th class="align-middle col-4">Pohlaví</th>
+                <td class="text-center align-middle col-6">
+                    <select class="form-select form-select-md" id="sex" name="sex" th:field="${client.sex}">
                         <option th:each="sex : ${T(cz.menu.model.Sex).values()}"
                                 th:value="${sex}" th:text="${sex.gender}"></option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <th class="align-middle col-4">Jméno</th>
-                    <td class="text-center align-middle col-6">
-                        <input th:field="${client.firstName}" id="firstName" type="text" class="form-control"
-                               placeholder="Jan">
-                    </td>
-                </tr>
-                <tr>
-                    <th class="align-middle col-4">Příjmení</th>
-                    <td class="text-center align-middle col-6">
-                        <input th:field="${client.secondName}" id="secondName" type="text" class="form-control"
-                               placeholder="Novák">
-                    </td>
-                </tr>
-                <tr>
-                    <th class="align-middle col-4">Výška</th>
-                    <td class="text-center align-middle col-6">
-                        <input th:field="${client.height}" id="clientHeight" type="text" class="form-control"
-                               placeholder="Výška v cm">
-                    </td>
-                </tr>
-                <tr>
-                    <th class="align-middle col-4">Váha</th>
-                    <td class="text-center align-middle col-6">
-                        <input th:field="${client.weight}" id="clientWeight" type="text" class="form-control"
-                               placeholder="Váha v kg">
-                    </td>
-                </tr>
-                <tr>
-                    <th class="align-middle col-4">Věk</th>
-                    <td class="text-center align-middle col-6">
-                        <input th:field="${client.age}" id="clientAge" type="text" class="form-control">
-                    </td>
-                </tr>
-                <tr>
-                    <th class="align-middle col-4">Koeficient pohybu</th>
-                    <td class="text-center align-middle col-6">
-                        <input th:field="${client.bmrCoef}" id="bmrCoef" type="text" class="form-control"
-                               placeholder="Rozmezí 1.0 - 1.3">
-                    </td>
-                </tr>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th class="align-middle col-4">Jméno</th>
+                <td class="text-center align-middle col-6">
+                    <input th:field="${client.firstName}" id="firstName" type="text" class="form-control"
+                           placeholder="Jan">
+                </td>
+            </tr>
+            <tr>
+                <th class="align-middle col-4">Příjmení</th>
+                <td class="text-center align-middle col-6">
+                    <input th:field="${client.secondName}" id="secondName" type="text" class="form-control"
+                           placeholder="Novák">
+                </td>
+            </tr>
+            <tr>
+                <th class="align-middle col-4">Výška</th>
+                <td class="text-center align-middle col-6">
+                    <input th:field="${client.height}" id="clientHeight" type="number" class="form-control"
+                           placeholder="Výška v cm">
+                </td>
+            </tr>
+            <tr>
+                <th class="align-middle col-4">Váha</th>
+                <td class="text-center align-middle col-6">
+                    <input th:field="${client.weight}" id="clientWeight" type="number" class="form-control"
+                           placeholder="Váha v kg">
+                </td>
+            </tr>
+            <tr>
+                <th class="align-middle col-4">Věk</th>
+                <td class="text-center align-middle col-6">
+                    <input th:field="${client.age}" id="clientAge" type="number" class="form-control">
+                </td>
+            </tr>
+            <tr>
+                <th class="align-middle col-4">Koeficient pohybu</th>
+                <td class="text-center align-middle col-6">
+                    <input th:field="${client.bmrCoef}" id="bmrCoef" type="number" class="form-control"
+                           placeholder="Rozmezí 1.0 - 1.3">
+                </td>
+            </tr>
             </tbody>
         </table>
 
@@ -77,5 +78,13 @@
 
     </div>
 </form>
+<script>
+    $(document).ready(function () {
+        $('#clientHeight').val("")
+        $('#clientWeight').val("")
+        $('#clientAge').val("")
+        $('#bmrCoef').val("")
+    })
+</script>
 </body>
 </html>

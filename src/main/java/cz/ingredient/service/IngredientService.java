@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +27,23 @@ public class IngredientService implements IIngredientService {
     }
 
     @Override
-    public IngredientDto updateIngredientForm(Model model, Long ingredientId) throws IngredientException {
+    public IngredientDto updateIngredientForm(IngredientDto ingredientDto, Long ingredientId) throws IngredientException {
         Ingredient entity = ingredientRepository.findById(ingredientId)
                 .orElseThrow(() -> new IngredientException("Nenalezeny žádné ingredience s daným ID=" + ingredientId));
+        entity.setCarbohydrates(ingredientDto.getCarbohydrates());
+        entity.setFats(ingredientDto.getFats());
+        entity.setName(ingredientDto.getName());
+        entity.setFibre(ingredientDto.getFibre());
+        entity.setProteins(ingredientDto.getProteins());
+        entity.setKJ(ingredientDto.getKJ());
+
+        return new IngredientDto(ingredientRepository.save(entity));
+    }
+
+    @Override
+    public IngredientDto getIngredientForm(Long id) throws IngredientException {
+        Ingredient entity = ingredientRepository.findById(id)
+                .orElseThrow(() -> new IngredientException("Nenalezeny žádné ingredience s daným ID=" + id));
         return new IngredientDto(entity);
     }
 
